@@ -85,7 +85,7 @@ function StickySummary({ result }: { result: PortionCalculationResult }) {
                 <span className="block truncate text-xs text-guide-muted">
                   {item.name}
                 </span>
-                <span className="font-display text-xl font-medium tabular-nums">
+                <span className="font-display text-xl tabular-nums">
                   {formatGrams(item.grams)}
                 </span>
               </p>
@@ -190,14 +190,14 @@ export function MealBuilderScreen({
         >
           <span className={`relative shrink-0 ${visual.ink}`}>{visual.icon}</span>
           <div className="relative min-w-0 flex-1">
-            <h1 className="font-display m-0 text-2xl leading-tight font-medium text-pretty">
+            <h1 className="font-display m-0 text-2xl leading-tight text-pretty">
               {meal.label}
             </h1>
             <p className="m-0 text-sm text-guide-muted">
               Meta de {person.name}
             </p>
           </div>
-          <p className="relative m-0 shrink-0 font-display text-2xl font-medium tabular-nums">
+          <p className="relative m-0 shrink-0 font-display text-2xl tabular-nums">
             {formatKcal(meal.targetCalories)}
           </p>
         </div>

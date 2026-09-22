@@ -15,7 +15,7 @@ export function MealBuilderPage() {
         <p className="m-0 text-xs font-bold tracking-[0.22em] text-guide-accent uppercase">
           Ficha de porções
         </p>
-        <h1 className="font-display m-0 text-4xl font-medium text-pretty">
+        <h1 className="font-display m-0 text-4xl text-pretty">
           Refeição não encontrada
         </h1>
         <p className="m-0 text-guide-muted">
