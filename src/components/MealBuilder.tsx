@@ -7,7 +7,7 @@ import type {
   Person,
   PortionCalculationResult,
 } from "../domain/types.ts";
-import { CALCULATION_ERROR_MESSAGE, formatGrams } from "../format.ts";
+import { CALCULATION_ERROR_MESSAGE, formatPortion } from "../format.ts";
 import { FoodSelector } from "./FoodSelector.tsx";
 import { MEAL_VISUALS } from "./MealVisuals.tsx";
 import { PortionResult } from "./PortionResult.tsx";
@@ -85,8 +85,8 @@ function StickySummary({ result }: { result: PortionCalculationResult }) {
                 <span className="block truncate text-xs text-guide-muted">
                   {item.name}
                 </span>
-                <span className="font-display text-xl tabular-nums">
-                  {formatGrams(item.grams)}
+                <span className="block truncate font-display text-xl tabular-nums">
+                  {formatPortion(item)}
                 </span>
               </p>
             </div>

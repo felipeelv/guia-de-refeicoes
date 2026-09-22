@@ -9,7 +9,7 @@ import {
 import { HomeScreen } from "../src/pages/HomePage.tsx";
 import { PERSONS, personByKey } from "../src/catalog/persons.ts";
 import type { Food, MealConfig, Person } from "../src/domain/types.ts";
-import { CALCULATION_ERROR_MESSAGE } from "../src/format.ts";
+import { CALCULATION_ERROR_MESSAGE, formatUnits } from "../src/format.ts";
 
 const lunch: MealConfig = {
   key: "lunch",
@@ -72,6 +72,14 @@ const chicken = food({
   caloriesPer100g: 180,
   preparation: "grelhado, sem óleo",
 });
+const egg = food({
+  id: "ovo",
+  name: "Ovo",
+  category: "protein",
+  caloriesPer100g: 125,
+  preparation: "cozido, sem sal",
+  unit: { singular: "ovo", plural: "ovos", gramsPerUnit: 50, stepUnits: 0.5 },
+});
 
 function markup(
   carbohydrateId: string | null,
@@ -79,6 +87,7 @@ function markup(
   carbohydrates = [rice],
   secondCarbohydrateId: string | null = null,
   person: Person = felipe,
+  proteins = [chicken],
 ) {
   return renderToStaticMarkup(
     <MemoryRouter>
@@ -86,7 +95,7 @@ function markup(
         person={person}
         meal={person.meals[0] ?? lunch}
         carbohydrates={carbohydrates}
-        proteins={[chicken]}
+        proteins={proteins}
         carbohydrateId={carbohydrateId}
         secondCarbohydrateId={secondCarbohydrateId}
         proteinId={proteinId}
@@ -193,6 +202,29 @@ test("cada tile mostra nome e preparo, sem energia, com etapas visíveis", () =>
   assert.doesNotMatch(html, /kcal|100 g/);
   assert.match(html, /aria-label="Etapas"/);
   assert.equal(html.match(/aria-current="step"/g)?.length, 1);
+});
+
+test("ovo aparece em quantidade de ovos, com as gramas como detalhe", () => {
+  const html = markup("arroz", "ovo", [rice], null, felipe, [egg]);
+  assert.match(html, /5 ovos e ½/);
+  assert.match(html, /275 g/);
+  assert.doesNotMatch(html, /kcal/);
+  assert.match(html, /Porções dentro da margem/);
+  assert.match(html, /160 g/);
+
+  const semUnidade = markup("arroz", "frango");
+  assert.doesNotMatch(semUnidade, /ovo/);
+  assert.match(semUnidade, /180 g/);
+});
+
+test("contagem de unidades tem singular, plural e meia unidade", () => {
+  const unit = { singular: "ovo", plural: "ovos", gramsPerUnit: 50, stepUnits: 0.5 };
+  assert.equal(formatUnits(1, unit), "1 ovo");
+  assert.equal(formatUnits(2, unit), "2 ovos");
+  assert.equal(formatUnits(0.5, unit), "½ ovo");
+  assert.equal(formatUnits(1.5, unit), "1 ovo e ½");
+  assert.equal(formatUnits(3.5, unit), "3 ovos e ½");
+  assert.equal(formatUnits(1.25, unit), "1,25 ovos");
 });
 
 test("arredondamento por pessoa: Gabriela usa 5 g na meta de 330", () => {

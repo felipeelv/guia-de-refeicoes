@@ -298,3 +298,29 @@ test("URLs antigas e pessoas desconhecidas caem na pessoa padrão", async ({
     page.getByRole("heading", { name: "Refeição não encontrada" }),
   ).toBeVisible();
 });
+
+test("o ovo vem em quantidade de ovos, com as gramas como detalhe", async ({
+  page,
+}) => {
+  const consoleErrors = watchErrors(page);
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto("/felipe/refeicoes/breakfast?carb=pao-frances&protein=ovo");
+  const live = page.locator("[aria-live='polite']");
+  await expect(live).toContainText("4 ovos");
+  await expect(live).toContainText("200 g");
+  await expect(live).toContainText("50 g");
+  await expect(live).toContainText("Porções dentro da margem");
+  await expect(live).not.toContainText("kcal");
+  await expectNoOverflow(page);
+
+  await page.goto("/kelly/refeicoes/snack?carb=aveia&protein=ovo");
+  await expect(live).toContainText("2 ovos");
+  await expect(live).toContainText("100 g");
+
+  const proteins = page.getByRole("group", { name: "Proteína" });
+  await proteins.getByRole("radio", { name: /Iogurte natural/ }).click();
+  await expect(live).not.toContainText("ovo");
+  await expect(live).toContainText("g");
+  await expectNoOverflow(page);
+  expect(consoleErrors).toEqual([]);
+});
