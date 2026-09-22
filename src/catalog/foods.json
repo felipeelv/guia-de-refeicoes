@@ -1,0 +1,496 @@
+[
+  {
+    "id": "arroz-branco",
+    "name": "Arroz branco",
+    "category": "carbohydrate",
+    "meals": ["lunch", "dinner"],
+    "preparation": "cozido, sem óleo, sem sal",
+    "caloriesPer100g": 131,
+    "proteinPer100g": 2.38,
+    "carbohydratePer100g": 30,
+    "fatPer100g": 0.41,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0018A",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0018A",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "arroz-integral",
+    "name": "Arroz integral",
+    "category": "carbohydrate",
+    "meals": ["lunch", "dinner"],
+    "preparation": "cozido, sem óleo, sem sal",
+    "caloriesPer100g": 108,
+    "proteinPer100g": 2.44,
+    "carbohydratePer100g": 23.5,
+    "fatPer100g": 0.87,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0016A",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0016A",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 2
+  },
+  {
+    "id": "feijao-carioca",
+    "name": "Feijão carioca",
+    "category": "carbohydrate",
+    "meals": ["lunch", "dinner"],
+    "preparation": "cozido com caldo, sem óleo, sem sal",
+    "caloriesPer100g": 71,
+    "proteinPer100g": 4.77,
+    "carbohydratePer100g": 15.3,
+    "fatPer100g": 0.54,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0001T",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0001T",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 3
+  },
+  {
+    "id": "feijao-preto",
+    "name": "Feijão preto",
+    "category": "carbohydrate",
+    "meals": ["lunch", "dinner"],
+    "preparation": "cozido com caldo, sem óleo, sem sal",
+    "caloriesPer100g": 62,
+    "proteinPer100g": 4.48,
+    "carbohydratePer100g": 14,
+    "fatPer100g": 0.54,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0008T",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0008T",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 4
+  },
+  {
+    "id": "batata-inglesa",
+    "name": "Batata inglesa",
+    "category": "carbohydrate",
+    "meals": ["lunch", "dinner"],
+    "preparation": "cozida, sem casca, drenada, sem óleo, sem sal",
+    "caloriesPer100g": 52,
+    "proteinPer100g": 1.33,
+    "carbohydratePer100g": 12.3,
+    "fatPer100g": 0.05,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0041B",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0041B",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 5
+  },
+  {
+    "id": "batata-doce",
+    "name": "Batata-doce",
+    "category": "carbohydrate",
+    "meals": ["lunch", "dinner"],
+    "preparation": "assada, sem casca, sem óleo, sem sal",
+    "caloriesPer100g": 145,
+    "proteinPer100g": 2.19,
+    "carbohydratePer100g": 35.3,
+    "fatPer100g": 0.28,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0302B",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0302B",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 6
+  },
+  {
+    "id": "mandioca",
+    "name": "Mandioca",
+    "category": "carbohydrate",
+    "meals": ["lunch", "dinner"],
+    "preparation": "cozida, sem casca, drenada, sem óleo, com sal",
+    "caloriesPer100g": 120,
+    "proteinPer100g": 0.64,
+    "carbohydratePer100g": 29.7,
+    "fatPer100g": 0.24,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0908B",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0908B",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 7
+  },
+  {
+    "id": "macarrao",
+    "name": "Macarrão",
+    "category": "carbohydrate",
+    "meals": ["lunch", "dinner"],
+    "preparation": "cozido, sem óleo, sem sal",
+    "caloriesPer100g": 161,
+    "proteinPer100g": 4.57,
+    "carbohydratePer100g": 34.7,
+    "fatPer100g": 0.74,
+    "source": {
+      "name": "TBCA",
+      "code": "BRD0006A",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRD0006A",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 8
+  },
+  {
+    "id": "pao-frances",
+    "name": "Pão francês",
+    "category": "carbohydrate",
+    "meals": ["breakfast"],
+    "preparation": "de padaria, com farinha de trigo refinada",
+    "caloriesPer100g": 300,
+    "proteinPer100g": 9.83,
+    "carbohydratePer100g": 61.6,
+    "fatPer100g": 2.12,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0002A",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0002A",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 9
+  },
+  {
+    "id": "aveia",
+    "name": "Aveia",
+    "category": "carbohydrate",
+    "meals": ["breakfast", "snack"],
+    "preparation": "em flocos",
+    "caloriesPer100g": 379,
+    "proteinPer100g": 15.6,
+    "carbohydratePer100g": 64.5,
+    "fatPer100g": 8.6,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0024A",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0024A",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 10
+  },
+  {
+    "id": "tapioca",
+    "name": "Tapioca",
+    "category": "carbohydrate",
+    "meals": ["breakfast", "snack"],
+    "preparation": "na frigideira, sem manteiga, sem recheio",
+    "caloriesPer100g": 289,
+    "proteinPer100g": 0.36,
+    "carbohydratePer100g": 71.9,
+    "fatPer100g": 0,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0906B",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0906B",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 11
+  },
+  {
+    "id": "banana",
+    "name": "Banana",
+    "category": "carbohydrate",
+    "meals": ["breakfast", "snack", "supper"],
+    "preparation": "in natura",
+    "caloriesPer100g": 109,
+    "proteinPer100g": 1.27,
+    "carbohydratePer100g": 26.7,
+    "fatPer100g": 0.19,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0006C",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0006C",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 12
+  },
+  {
+    "id": "mamao",
+    "name": "Mamão",
+    "category": "carbohydrate",
+    "meals": ["breakfast", "snack", "supper"],
+    "preparation": "polpa, in natura",
+    "caloriesPer100g": 44,
+    "proteinPer100g": 0.57,
+    "carbohydratePer100g": 10.7,
+    "fatPer100g": 0.25,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0024C",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0024C",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 13
+  },
+  {
+    "id": "maca",
+    "name": "Maçã",
+    "category": "carbohydrate",
+    "meals": ["snack", "supper"],
+    "preparation": "com casca, in natura",
+    "caloriesPer100g": 59,
+    "proteinPer100g": 0.29,
+    "carbohydratePer100g": 15.2,
+    "fatPer100g": null,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0064C",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0064C",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 14
+  },
+  {
+    "id": "peito-de-frango",
+    "name": "Peito de frango",
+    "category": "protein",
+    "meals": ["lunch", "dinner"],
+    "preparation": "grelhado, sem pele, sem óleo, sem sal",
+    "caloriesPer100g": 150,
+    "proteinPer100g": 32.1,
+    "carbohydratePer100g": 0,
+    "fatPer100g": 2.45,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0114F",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0114F",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 15
+  },
+  {
+    "id": "patinho",
+    "name": "Patinho",
+    "category": "protein",
+    "meals": ["lunch", "dinner"],
+    "preparation": "grelhado, sem gordura, sem óleo, sem sal",
+    "caloriesPer100g": 211,
+    "proteinPer100g": 36,
+    "carbohydratePer100g": 0,
+    "fatPer100g": 7.5,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0045F",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0045F",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 16
+  },
+  {
+    "id": "coxao-mole",
+    "name": "Coxão mole",
+    "category": "protein",
+    "meals": ["lunch", "dinner"],
+    "preparation": "cozido, sem gordura, sem óleo, sem sal",
+    "caloriesPer100g": 209,
+    "proteinPer100g": 32.2,
+    "carbohydratePer100g": 0,
+    "fatPer100g": 8.91,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0034F",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0034F",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 17
+  },
+  {
+    "id": "file-mignon",
+    "name": "Filé-mignon",
+    "category": "protein",
+    "meals": ["lunch", "dinner"],
+    "preparation": "grelhado, sem gordura, sem óleo, sem sal",
+    "caloriesPer100g": 211,
+    "proteinPer100g": 32.9,
+    "carbohydratePer100g": 0,
+    "fatPer100g": 8.83,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0036F",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0036F",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 18
+  },
+  {
+    "id": "lombo-suino",
+    "name": "Lombo suíno",
+    "category": "protein",
+    "meals": ["lunch", "dinner"],
+    "preparation": "assado, sem óleo, sem sal",
+    "caloriesPer100g": 200,
+    "proteinPer100g": 35.7,
+    "carbohydratePer100g": 0,
+    "fatPer100g": 6.4,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0163F",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0163F",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 19
+  },
+  {
+    "id": "tilapia",
+    "name": "Tilápia",
+    "category": "protein",
+    "meals": ["lunch", "dinner"],
+    "preparation": "grelhada, sem pele, sem óleo, sem sal",
+    "caloriesPer100g": 90,
+    "proteinPer100g": 18.5,
+    "carbohydratePer100g": 0,
+    "fatPer100g": 1.73,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0486E",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0486E",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 20
+  },
+  {
+    "id": "ovo",
+    "name": "Ovo",
+    "category": "protein",
+    "meals": ["breakfast", "lunch", "snack", "dinner"],
+    "preparation": "cozido, sem sal",
+    "caloriesPer100g": 125,
+    "proteinPer100g": 10.4,
+    "carbohydratePer100g": 1.38,
+    "fatPer100g": 8.7,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0010J",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0010J",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 21
+  },
+  {
+    "id": "iogurte-natural",
+    "name": "Iogurte natural",
+    "category": "protein",
+    "meals": ["breakfast", "snack", "supper"],
+    "preparation": "integral, sem açúcar",
+    "caloriesPer100g": 57,
+    "proteinPer100g": 4.02,
+    "carbohydratePer100g": 4.76,
+    "fatPer100g": 2.43,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0020G",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0020G",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 22
+  },
+  {
+    "id": "leite-integral",
+    "name": "Leite integral",
+    "category": "protein",
+    "meals": ["breakfast", "supper"],
+    "preparation": "UHT, sem açúcar",
+    "caloriesPer100g": 65,
+    "proteinPer100g": 2.35,
+    "carbohydratePer100g": 7.16,
+    "fatPer100g": 3.04,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0044G",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0044G",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 23
+  },
+  {
+    "id": "queijo-minas-frescal",
+    "name": "Queijo minas frescal",
+    "category": "protein",
+    "meals": ["breakfast", "snack"],
+    "preparation": "sem tempero",
+    "caloriesPer100g": 243,
+    "proteinPer100g": 15.9,
+    "carbohydratePer100g": 3.02,
+    "fatPer100g": 18.6,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0052G",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0052G",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 24
+  },
+  {
+    "id": "ricota",
+    "name": "Ricota",
+    "category": "protein",
+    "meals": ["snack", "supper"],
+    "preparation": "fresca, sem tempero",
+    "caloriesPer100g": 139,
+    "proteinPer100g": 12.6,
+    "carbohydratePer100g": 3.79,
+    "fatPer100g": 8.11,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0051G",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0051G",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 25
+  },
+  {
+    "id": "castanha-de-caju",
+    "name": "Castanha de caju",
+    "category": "protein",
+    "meals": ["snack"],
+    "preparation": "sem torrar, sem sal",
+    "caloriesPer100g": 582,
+    "proteinPer100g": 18.2,
+    "carbohydratePer100g": 30.2,
+    "fatPer100g": 43.9,
+    "source": {
+      "name": "TBCA",
+      "code": "BRC0012U",
+      "url": "https://www.tbca.net.br/base-dados-en/int_food_composition.php?cod_produto=BRC0012U",
+      "accessedAt": "2026-09-22"
+    },
+    "active": true,
+    "sortOrder": 26
+  }
+]

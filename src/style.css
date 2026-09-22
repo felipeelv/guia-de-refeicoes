@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", serif;
+  --font-sans: "Atkinson Hyperlegible", "Lucida Sans Unicode", sans-serif;
+
+  --color-guide-ink: #1f1a17;
+  --color-guide-muted: #6b6259;
+  --color-guide-paper: #fbf7f2;
+  --color-guide-card: #ffffff;
+  --color-guide-line: #ece3d8;
+  --color-guide-accent: #c2551f;
+  --color-guide-focus: #8a3d14;
+  --color-guide-selected: #fdeade;
+
+  --color-meal-breakfast: #fbe9c8;
+  --color-meal-breakfast-ink: #94600f;
+  --color-meal-lunch: #fadedb;
+  --color-meal-lunch-ink: #b04137;
+  --color-meal-snack: #dcebd7;
+  --color-meal-snack-ink: #4a7241;
+  --color-meal-dinner: #e3ddf6;
+  --color-meal-dinner-ink: #5d449b;
+  --color-meal-supper: #d8e6f3;
+  --color-meal-supper-ink: #396084;
+}
+
+html {
+  color-scheme: light;
+  background-color: var(--color-guide-paper);
+  color: var(--color-guide-ink);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgb(194 85 31 / 0.16);
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-guide-focus);
+  outline-offset: 3px;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.rise {
+  animation: rise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.rise:nth-child(1) { animation-delay: 40ms; }
+.rise:nth-child(2) { animation-delay: 90ms; }
+.rise:nth-child(3) { animation-delay: 140ms; }
+.rise:nth-child(4) { animation-delay: 190ms; }
+.rise:nth-child(5) { animation-delay: 240ms; }
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
