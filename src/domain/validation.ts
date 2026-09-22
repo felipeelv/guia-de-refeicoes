@@ -1,4 +1,9 @@
-import type { Food, MealConfig, PortionCalculationInput } from "./types.ts";
+import type {
+  Food,
+  MealConfig,
+  Person,
+  PortionCalculationInput,
+} from "./types.ts";
 
 export class PortionCalculationError extends Error {
   constructor(message: string) {
@@ -34,6 +39,40 @@ export function mealConfigError(meals: readonly MealConfig[]): string | null {
 
 export function assertMealConfigs(meals: readonly MealConfig[]): void {
   const error = mealConfigError(meals);
+  if (error) throw new PortionCalculationError(error);
+}
+
+export function personConfigError(persons: readonly Person[]): string | null {
+  if (persons.length === 0) return "Nenhuma pessoa configurada.";
+  const keys = new Set<string>();
+  for (const person of persons) {
+    if (!person.name.trim()) return `Pessoa sem nome: ${person.key}.`;
+    if (keys.has(person.key)) return `Pessoa repetida: ${person.key}.`;
+    keys.add(person.key);
+    if (!(person.dailyCalories > 0) || !Number.isFinite(person.dailyCalories)) {
+      return `Meta diária inválida em ${person.key}.`;
+    }
+    if (
+      !Number.isInteger(person.roundingIncrementGrams) ||
+      person.roundingIncrementGrams <= 0
+    ) {
+      return `Incremento de arredondamento inválido em ${person.key}.`;
+    }
+    const mealError = mealConfigError(person.meals);
+    if (mealError) return `${person.key}: ${mealError}`;
+    const total = person.meals.reduce(
+      (sum, meal) => sum + meal.targetCalories,
+      0,
+    );
+    if (total !== person.dailyCalories) {
+      return `As refeições de ${person.key} somam ${total} kcal, não ${person.dailyCalories}.`;
+    }
+  }
+  return null;
+}
+
+export function assertPersonConfigs(persons: readonly Person[]): void {
+  const error = personConfigError(persons);
   if (error) throw new PortionCalculationError(error);
 }
 

@@ -3,10 +3,12 @@ import test from "node:test";
 import { catalogIssue, foodsByCategory, loadCatalog } from "../src/catalog/catalog.ts";
 import rawFoods from "../src/catalog/foods.json" with { type: "json" };
 import { MEALS, mealsInOrder } from "../src/catalog/meals.ts";
+import { DEFAULT_PERSON, PERSONS, personByKey } from "../src/catalog/persons.ts";
 import type { Food } from "../src/domain/types.ts";
 import {
   PortionCalculationError,
   mealConfigError,
+  personConfigError,
 } from "../src/domain/validation.ts";
 
 const foods = rawFoods as Food[];
@@ -66,10 +68,100 @@ test("cada refeição oferece só alimentos compatíveis com ela", () => {
     "feijao-preto",
   ]);
   assert.deepEqual(foodsByCategory("carbohydrate", "supper").map((f) => f.id), [
+    "aveia",
+    "tapioca",
     "banana",
     "mamao",
     "maca",
   ]);
+});
+
+test("frutas têm tag e ficam fora do cardápio de quem exclui a tag", () => {
+  const fruits = foods.filter((food) => food.tags?.includes("fruit"));
+  assert.deepEqual(
+    fruits.map((food) => food.id),
+    ["banana", "mamao", "maca"],
+  );
+  assert.equal(
+    catalogIssue({ ...(foods[0] as Food), tags: ["doce" as never] }),
+    "Tag inválida em arroz-branco: doce.",
+  );
+  const withoutFruit = foodsByCategory("carbohydrate", "breakfast", ["fruit"]);
+  assert.deepEqual(
+    withoutFruit.map((food) => food.id),
+    ["pao-frances", "aveia", "tapioca"],
+  );
+  assert.deepEqual(
+    foodsByCategory("carbohydrate", "snack", ["fruit"]).map((food) => food.id),
+    ["aveia", "tapioca"],
+  );
+  assert.deepEqual(
+    foodsByCategory("carbohydrate", "supper", ["fruit"]).map((food) => food.id),
+    ["aveia", "tapioca"],
+  );
+  assert.equal(foodsByCategory("carbohydrate", "lunch", ["fruit"]).length, 8);
+  assert.deepEqual(
+    foodsByCategory("carbohydrate", "supper", []).map((food) => food.id),
+    foodsByCategory("carbohydrate", "supper").map((food) => food.id),
+  );
+});
+
+test("Felipe e Gabriela têm metas fechadas, alimentos por refeição e arredondamento próprio", () => {
+  assert.equal(personConfigError(PERSONS), null);
+  assert.deepEqual(
+    PERSONS.map((person) => [person.key, person.name, person.dailyCalories]),
+    [
+      ["felipe", "Felipe", 2000],
+      ["gabriela", "Ana Gabriela", 1200],
+    ],
+  );
+  assert.equal(DEFAULT_PERSON.key, "felipe");
+  assert.equal(personByKey("ninguem"), null);
+  assert.equal(personByKey(undefined), null);
+
+  const felipe = personByKey("felipe");
+  const gabriela = personByKey("gabriela");
+  assert.ok(felipe && gabriela);
+  assert.deepEqual(felipe.excludedTags, ["fruit"]);
+  assert.deepEqual(gabriela.excludedTags, []);
+  assert.equal(felipe.roundingIncrementGrams, 10);
+  assert.equal(gabriela.roundingIncrementGrams, 5);
+  assert.deepEqual(
+    mealsInOrder(gabriela.meals).map((meal) => [meal.label, meal.targetCalories]),
+    [
+      ["Café da manhã", 240],
+      ["Almoço", 330],
+      ["Lanche", 180],
+      ["Jantar", 330],
+      ["Ceia", 120],
+    ],
+  );
+  for (const person of PERSONS) {
+    for (const meal of person.meals) {
+      assert.equal(meal.carbohydrateShare, 0.4);
+      assert.ok(
+        foodsByCategory("carbohydrate", meal.key, person.excludedTags).length > 0,
+        `${person.key} sem carboidrato em ${meal.key}.`,
+      );
+      assert.ok(
+        foodsByCategory("protein", meal.key, person.excludedTags).length > 0,
+        `${person.key} sem proteína em ${meal.key}.`,
+      );
+    }
+  }
+  assert.match(
+    personConfigError([{ ...gabriela, dailyCalories: 1300 }]) ?? "",
+    /somam 1200 kcal, não 1300/,
+  );
+  assert.match(
+    personConfigError([felipe, { ...gabriela, key: "felipe" }]) ?? "",
+    /repetida/,
+  );
+  assert.match(
+    personConfigError([{ ...felipe, roundingIncrementGrams: 2.5 }]) ?? "",
+    /Incremento/,
+  );
+  assert.match(personConfigError([]) ?? "", /Nenhuma pessoa/);
 });
 
 test("registro inválido ou inativo fica fora da seleção", () => {
