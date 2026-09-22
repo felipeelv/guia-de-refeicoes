@@ -46,10 +46,13 @@ export const MEALS: MealConfig[] = [
 
 assertMealConfigs(MEALS);
 
-export function mealsInOrder(): MealConfig[] {
-  return [...MEALS].sort((a, b) => a.order - b.order);
+export function mealsInOrder(meals: readonly MealConfig[] = MEALS): MealConfig[] {
+  return [...meals].sort((a, b) => a.order - b.order);
 }
 
-export function mealByKey(key: string | undefined): MealConfig | null {
-  return MEALS.find((meal) => meal.key === key) ?? null;
+export function mealByKey(
+  key: string | undefined,
+  meals: readonly MealConfig[] = MEALS,
+): MealConfig | null {
+  return meals.find((meal) => meal.key === key) ?? null;
 }

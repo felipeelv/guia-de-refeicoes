@@ -1,13 +1,21 @@
 import { Link } from "react-router-dom";
-import type { MealConfig } from "../domain/types.ts";
+import type { MealConfig, PersonKey } from "../domain/types.ts";
 import { formatKcal } from "../format.ts";
 import { MEAL_VISUALS } from "./MealVisuals.tsx";
 
-export function MealCard({ meal, wide }: { meal: MealConfig; wide?: boolean }) {
+export function MealCard({
+  meal,
+  personKey,
+  wide,
+}: {
+  meal: MealConfig;
+  personKey: PersonKey;
+  wide?: boolean;
+}) {
   const visual = MEAL_VISUALS[meal.key];
   return (
     <Link
-      to={`/refeicoes/${meal.key}`}
+      to={`/${personKey}/refeicoes/${meal.key}`}
       className={`relative flex h-full flex-col overflow-hidden rounded-3xl ${visual.surface} ${
         wide ? "min-h-32" : "min-h-52"
       } p-4 text-guide-ink no-underline transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0`}

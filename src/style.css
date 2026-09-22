@@ -54,6 +54,16 @@ body {
   font-family: var(--font-display);
 }
 
+.person-select:has(:focus-visible) {
+  outline: 3px solid var(--color-guide-focus);
+  outline-offset: 3px;
+}
+
+input[type="radio"].peer:focus-visible {
+  outline: 3px solid var(--color-guide-focus);
+  outline-offset: 4px;
+}
+
 .rise {
   animation: rise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }

@@ -1,4 +1,4 @@
-import type { Food, FoodCategory, MealKey } from "../domain/types.ts";
+import type { Food, FoodCategory, FoodTag, MealKey } from "../domain/types.ts";
 import rawFoods from "./foods.json" with { type: "json" };
 
 const RAW_WORD = /\bcru(?:a|o|as|os)?\b/i;
@@ -12,6 +12,7 @@ const MEAL_KEYS = new Set<MealKey>([
   "dinner",
   "supper",
 ]);
+const TAGS = new Set<FoodTag>(["fruit"]);
 
 export function catalogIssue(food: Food): string | null {
   if (!ID_PATTERN.test(food.id)) return `Id inválido: ${food.id}.`;
@@ -26,6 +27,12 @@ export function catalogIssue(food: Food): string | null {
   }
   for (const meal of food.meals) {
     if (!MEAL_KEYS.has(meal)) return `Refeição inválida em ${food.id}: ${meal}.`;
+  }
+  if (food.tags !== undefined) {
+    if (!Array.isArray(food.tags)) return `Tags inválidas em ${food.id}.`;
+    for (const tag of food.tags) {
+      if (!TAGS.has(tag)) return `Tag inválida em ${food.id}: ${tag}.`;
+    }
   }
   if (!Number.isFinite(food.caloriesPer100g) || food.caloriesPer100g <= 0) {
     return `Calorias inválidas em ${food.id}.`;
@@ -69,8 +76,12 @@ export const foods = loaded.active;
 export function foodsByCategory(
   category: FoodCategory,
   meal: MealKey,
+  excludedTags: readonly FoodTag[] = [],
 ): Food[] {
   return foods.filter(
-    (food) => food.category === category && food.meals.includes(meal),
+    (food) =>
+      food.category === category &&
+      food.meals.includes(meal) &&
+      !(food.tags ?? []).some((tag) => excludedTags.includes(tag)),
   );
 }

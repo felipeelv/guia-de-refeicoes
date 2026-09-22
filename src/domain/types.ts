@@ -14,6 +14,19 @@ export interface MealConfig {
   order: number;
 }
 
+export type PersonKey = "felipe" | "gabriela";
+
+export type FoodTag = "fruit";
+
+export interface Person {
+  key: PersonKey;
+  name: string;
+  dailyCalories: number;
+  roundingIncrementGrams: number;
+  excludedTags: FoodTag[];
+  meals: MealConfig[];
+}
+
 export type FoodCategory = "carbohydrate" | "protein";
 
 export interface FoodSource {
@@ -28,6 +41,7 @@ export interface Food {
   name: string;
   category: FoodCategory;
   meals: MealKey[];
+  tags?: FoodTag[];
   preparation: string;
   caloriesPer100g: number;
   proteinPer100g: number | null;
