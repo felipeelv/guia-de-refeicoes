@@ -2,6 +2,8 @@
 
 Consulta de porções para uma meta calórica fixa, com um cardápio por pessoa. O app roda só no navegador: não tem login, banco nem soma do dia. A caloria da refeição não muda. O alimento muda. A porção se adapta.
 
+As calorias existem só na configuração e no cálculo. A tela mostra apenas gramas e um aviso de margem, sem números de energia, para evitar o efeito psicológico de contar calorias.
+
 Hoje existem duas pessoas: Felipe (2000 kcal por dia, sem fruta, porções de 10 em 10 g) e Ana Gabriela (1200 kcal por dia, porções de 5 em 5 g). O dropdown no topo troca a pessoa e mantém a refeição e os alimentos ainda válidos.
 
 ## Executar

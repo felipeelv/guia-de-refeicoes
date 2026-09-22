@@ -2,7 +2,6 @@ import { useOutletContext } from "react-router-dom";
 import { MealCard } from "../components/MealCard.tsx";
 import { mealsInOrder } from "../catalog/meals.ts";
 import type { Person } from "../domain/types.ts";
-import { formatKcal } from "../format.ts";
 
 export function HomeScreen({ person }: { person: Person }) {
   const meals = mealsInOrder(person.meals);
@@ -16,10 +15,7 @@ export function HomeScreen({ person }: { person: Person }) {
           Cardápio de {person.name}
         </h1>
         <p className="m-0 text-guide-muted text-pretty">
-          <span className="font-bold text-guide-ink tabular-nums">
-            {formatKcal(person.dailyCalories)}
-          </span>{" "}
-          por dia. Escolha uma refeição para calcular as porções.
+          Escolha uma refeição para calcular as porções.
         </p>
       </header>
       <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0">

@@ -1,6 +1,5 @@
 import { useId, type ReactNode } from "react";
 import type { Food } from "../domain/types.ts";
-import { formatNumber } from "../format.ts";
 
 function CheckIcon() {
   return (
@@ -110,7 +109,7 @@ export function FoodSelector({
             <Tile
               key={food.id}
               selected={selected}
-              className="min-h-28"
+              className="min-h-20"
               input={
                 <input
                   type="radio"
@@ -125,12 +124,6 @@ export function FoodSelector({
               <span className="leading-tight font-bold text-pretty">{food.name}</span>
               <span className="line-clamp-2 text-xs leading-snug text-guide-muted">
                 {food.preparation}
-              </span>
-              <span className="mt-auto pt-1 text-xs tabular-nums">
-                <span className="font-bold text-guide-accent">
-                  {formatNumber(food.caloriesPer100g)} kcal
-                </span>
-                <span className="text-guide-muted"> / 100 g</span>
               </span>
             </Tile>
           );

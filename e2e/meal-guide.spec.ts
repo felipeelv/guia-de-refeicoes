@@ -34,14 +34,14 @@ test("consulta porções do almoço do Felipe e recalcula ao trocar o alimento",
   );
   const meals = page.getByRole("list").getByRole("link");
   await expect(meals).toHaveText([
-    /Café da manhã\s+Comece o dia\s+400 kcal/,
-    /Almoço\s+Mais energia\s+550 kcal/,
-    /Lanche\s+Mantenha o foco\s+300 kcal/,
-    /Jantar\s+Equilíbrio à noite\s+550 kcal/,
-    /Ceia\s+Uma escolha leve\s+200 kcal/,
+    /Café da manhã\s+Comece o dia$/,
+    /Almoço\s+Mais energia$/,
+    /Lanche\s+Mantenha o foco$/,
+    /Jantar\s+Equilíbrio à noite$/,
+    /Ceia\s+Uma escolha leve$/,
   ]);
   const body = await page.locator("body").innerText();
-  for (const forbidden of ["Lançar", "Salvar", "Consumir", "Histórico", "Restante"]) {
+  for (const forbidden of ["Lançar", "Salvar", "Consumir", "Histórico", "Restante", "kcal"]) {
     expect(body.toLowerCase()).not.toContain(forbidden.toLowerCase());
   }
   await expectNoOverflow(page);
@@ -49,7 +49,7 @@ test("consulta porções do almoço do Felipe e recalcula ao trocar o alimento",
   await page.getByRole("link", { name: /Almoço/ }).click();
   await expect(page).toHaveURL(/\/felipe\/refeicoes\/lunch$/);
   await expect(page.getByRole("heading", { name: "Almoço" })).toBeVisible();
-  await expect(page.getByText("550 kcal").first()).toBeVisible();
+  await expect(page.getByText("Cardápio de Felipe")).toBeVisible();
   await expect(page.locator('input:not([type="radio"])')).toHaveCount(0);
   await expect(page.getByRole("spinbutton")).toHaveCount(0);
 
@@ -77,8 +77,8 @@ test("consulta porções do almoço do Felipe e recalcula ao trocar o alimento",
     page.getByRole("group", { name: "Segundo carboidrato (opcional)" }),
   ).toHaveCount(0);
   await expect(page.getByText("Escolha um carboidrato e uma proteína.")).toBeVisible();
-  await expect(page.getByText("Total estimado")).toHaveCount(0);
-  await expect(page.getByText("131 kcal / 100 g")).toBeVisible();
+  await expect(page.getByText("dentro da margem")).toHaveCount(0);
+  await expect(page.getByText("cozido, sem óleo, sem sal").first()).toBeVisible();
 
   await carbohydrates.getByRole("radio", { name: /Arroz branco/ }).click();
   await expect(
@@ -91,12 +91,10 @@ test("consulta porções do almoço do Felipe e recalcula ao trocar o alimento",
 
   const live = page.locator("[aria-live='polite']");
   await expect(live).toContainText("170 g");
-  await expect(live).toContainText("223 kcal");
   await expect(live).toContainText("220 g");
-  await expect(live).toContainText("330 kcal");
-  await expect(live).toContainText("Total estimado");
-  await expect(live).toContainText("553 kcal");
-  await expect(live).toContainText("3 kcal acima da meta · dentro da margem");
+  await expect(live).toContainText("Porções dentro da margem");
+  await expect(live).not.toContainText("kcal");
+  expect((await page.locator("body").innerText()).toLowerCase()).not.toContain("kcal");
   await expect(live).toContainText("cozido, sem óleo, sem sal");
   await expect(live).toContainText("grelhado, sem pele, sem óleo, sem sal");
   await expect(live).toContainText("TBCA");
@@ -112,7 +110,7 @@ test("consulta porções do almoço do Felipe e recalcula ao trocar o alimento",
   await page.keyboard.press("ArrowDown");
   await expect(page).toHaveURL(/carb=feijao-carioca/);
   await expect(live).toContainText("310 g");
-  await expect(live).toContainText("Na meta · dentro da margem");
+  await expect(live).toContainText("Porções dentro da margem");
   await expect(live).not.toContainText("170 g");
   await expectNoOverflow(page);
 
@@ -120,7 +118,6 @@ test("consulta porções do almoço do Felipe e recalcula ao trocar o alimento",
   await expect(page).toHaveURL(/\/felipe$/);
   await page.getByRole("link", { name: /Jantar/ }).click();
   await expect(page.getByRole("heading", { name: "Jantar" })).toBeVisible();
-  await expect(page.getByText("550 kcal").first()).toBeVisible();
   await expect(page.getByText("Escolha um carboidrato e uma proteína.")).toBeVisible();
   expect(consoleErrors).toEqual([]);
 });
@@ -155,11 +152,9 @@ test("arroz com feijão abre o segundo carboidrato e divide a porção", async (
   await expect(beans).toBeChecked();
   await expect(page).toHaveURL(/carb2=feijao-carioca/);
   await expect(live).toContainText("80 g");
-  await expect(live).toContainText("105 kcal");
   await expect(live).toContainText("150 g");
-  await expect(live).toContainText("107 kcal");
   await expect(live).toContainText("220 g");
-  await expect(live).toContainText("541 kcal");
+  await expect(live).not.toContainText("kcal");
   await expect(live).toContainText("cozido com caldo, sem óleo, sem sal");
   await expect(live).toContainText("BRC0001T");
   await expect(live).not.toContainText("170 g");
@@ -188,15 +183,14 @@ test("o dropdown troca de pessoa mantendo a refeição e libera fruta só para a
     exact: true,
   });
   const proteins = page.getByRole("group", { name: "Proteína" });
-  await expect(page.getByText("400 kcal").first()).toBeVisible();
+  await expect(page.getByText("Cardápio de Felipe")).toBeVisible();
   await expect(carbohydrates.getByRole("radio")).toHaveCount(3);
   await expect(carbohydrates.getByRole("radio", { name: /Banana/ })).toHaveCount(0);
   await expect(carbohydrates.getByRole("radio", { name: /Mamão/ })).toHaveCount(0);
 
   await page.getByRole("combobox", { name: "Pessoa" }).selectOption("gabriela");
   await expect(page).toHaveURL(/\/gabriela\/refeicoes\/breakfast$/);
-  await expect(page.getByText("240 kcal").first()).toBeVisible();
-  await expect(page.getByText("Meta de Ana Gabriela")).toBeVisible();
+  await expect(page.getByText("Cardápio de Ana Gabriela")).toBeVisible();
   await expect(carbohydrates.getByRole("radio")).toHaveCount(5);
   await expect(carbohydrates.getByRole("radio", { name: /Banana/ })).toHaveCount(1);
 
@@ -204,24 +198,22 @@ test("o dropdown troca de pessoa mantendo a refeição e libera fruta só para a
   await proteins.getByRole("radio", { name: /Iogurte natural/ }).click();
   const live = page.locator("[aria-live='polite']");
   await expect(live).toContainText("90 g");
-  await expect(live).toContainText("98 kcal");
   await expect(live).toContainText("255 g");
-  await expect(live).toContainText("145 kcal");
-  await expect(live).toContainText("243 kcal");
-  await expect(live).toContainText("3 kcal acima da meta · dentro da margem");
+  await expect(live).toContainText("Porções dentro da margem");
+  await expect(live).not.toContainText("kcal");
   await expectNoOverflow(page);
 
   await page.getByRole("combobox", { name: "Pessoa" }).selectOption("felipe");
   await expect(page).toHaveURL(
     /\/felipe\/refeicoes\/breakfast\?carb=banana&protein=iogurte-natural$/,
   );
-  await expect(page.getByText("400 kcal").first()).toBeVisible();
+  await expect(page.getByText("Cardápio de Felipe")).toBeVisible();
   await expect(carbohydrates.getByRole("radio", { name: /Banana/ })).toHaveCount(0);
   await expect(
     proteins.getByRole("radio", { name: /Iogurte natural/ }),
   ).toBeChecked();
   await expect(page.getByText("Agora escolha o carboidrato.")).toBeVisible();
-  await expect(live).not.toContainText("Total estimado");
+  await expect(live).not.toContainText("dentro da margem");
 
   await page.getByRole("link", { name: "Guia de refeições" }).click();
   await expect(page).toHaveURL(/\/felipe$/);
@@ -233,13 +225,8 @@ test("o dropdown troca de pessoa mantendo a refeição e libera fruta só para a
   await expect(
     page.getByRole("heading", { name: "Cardápio de Ana Gabriela" }),
   ).toBeVisible();
-  await expect(page.getByRole("list").getByRole("link")).toHaveText([
-    /Café da manhã\s+Comece o dia\s+240 kcal/,
-    /Almoço\s+Mais energia\s+330 kcal/,
-    /Lanche\s+Mantenha o foco\s+180 kcal/,
-    /Jantar\s+Equilíbrio à noite\s+330 kcal/,
-    /Ceia\s+Uma escolha leve\s+120 kcal/,
-  ]);
+  await expect(page.getByRole("list").getByRole("link")).toHaveCount(5);
+  expect((await page.locator("body").innerText()).toLowerCase()).not.toContain("kcal");
   expect(consoleErrors).toEqual([]);
 });
 
@@ -262,17 +249,16 @@ test("a ceia tem carboidrato sem fruta para o Felipe e usa 5 g para a Gabriela",
   const live = page.locator("[aria-live='polite']");
   await expect(live).toContainText("20 g");
   await expect(live).toContainText("210 g");
-  await expect(live).toContainText("196 kcal");
+  await expect(live).not.toContainText("kcal");
 
   await page.goto(
     "/gabriela/refeicoes/supper?carb=banana&protein=iogurte-natural",
   );
-  await expect(page.getByText("120 kcal").first()).toBeVisible();
+  await expect(page.getByText("Cardápio de Ana Gabriela")).toBeVisible();
   await expect(live).toContainText("45 g");
-  await expect(live).toContainText("49 kcal");
   await expect(live).toContainText("125 g");
-  await expect(live).toContainText("71 kcal");
-  await expect(live).toContainText("Na meta · dentro da margem");
+  await expect(live).toContainText("Porções dentro da margem");
+  await expect(live).not.toContainText("kcal");
 });
 
 test("URLs antigas e pessoas desconhecidas caem na pessoa padrão", async ({
@@ -282,7 +268,7 @@ test("URLs antigas e pessoas desconhecidas caem na pessoa padrão", async ({
   await expect(page).toHaveURL(
     /\/felipe\/refeicoes\/lunch\?carb=arroz-branco&protein=peito-de-frango$/,
   );
-  await expect(page.locator("[aria-live='polite']")).toContainText("553 kcal");
+  await expect(page.locator("[aria-live='polite']")).toContainText("220 g");
   await page.goto(
     "/gabriela/refeicoes/dinner?carb=arroz-branco&carb2=feijao-preto&protein=peito-de-frango",
   );

@@ -7,7 +7,7 @@ import type {
   Person,
   PortionCalculationResult,
 } from "../domain/types.ts";
-import { CALCULATION_ERROR_MESSAGE, formatGrams, formatKcal } from "../format.ts";
+import { CALCULATION_ERROR_MESSAGE, formatGrams } from "../format.ts";
 import { FoodSelector } from "./FoodSelector.tsx";
 import { MEAL_VISUALS } from "./MealVisuals.tsx";
 import { PortionResult } from "./PortionResult.tsx";
@@ -92,9 +92,6 @@ function StickySummary({ result }: { result: PortionCalculationResult }) {
             </div>
           ))}
         </div>
-        <p className="m-0 pt-1 text-center text-sm font-bold tabular-nums text-guide-accent">
-          {formatKcal(result.totalCalories)}
-        </p>
       </div>
     </div>
   );
@@ -194,12 +191,9 @@ export function MealBuilderScreen({
               {meal.label}
             </h1>
             <p className="m-0 text-sm text-guide-muted">
-              Meta de {person.name}
+              Cardápio de {person.name}
             </p>
           </div>
-          <p className="relative m-0 shrink-0 font-display text-2xl tabular-nums">
-            {formatKcal(meal.targetCalories)}
-          </p>
         </div>
         <Steps states={steps} />
       </header>
