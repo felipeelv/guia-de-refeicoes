@@ -297,35 +297,66 @@ test("alimento com unidade fecha em meia unidade e o carboidrato absorve a sobra
   assert.equal(semUnidade.protein.units, null);
 });
 
-test("ovo do catálogo vira contagem inteira ou meia em todas as refeições reais", () => {
+test("pão e ovo juntos: cada um fecha na unidade e o segundo usa o que sobrou", () => {
+  const kelly = PERSONS.find((person) => person.key === "kelly");
+  assert.ok(kelly);
+  const breakfast = kelly.meals.find((meal) => meal.key === "breakfast");
+  assert.ok(breakfast);
+  const bread = foods.find((item) => item.id === "pao-frances");
   const egg = foods.find((item) => item.id === "ovo");
-  assert.ok(egg);
-  assert.equal(egg.unit?.gramsPerUnit, 50);
+  assert.ok(bread && egg);
+  const result = calculatePortions({
+    meal: breakfast,
+    carbohydrateFood: bread,
+    proteinFood: egg,
+    roundingIncrementGrams: kelly.roundingIncrementGrams,
+  });
+  assert.equal(result.carbohydrate.units, 0.5);
+  assert.equal(result.carbohydrate.grams, 25);
+  assert.equal(result.protein.units, 3);
+  assert.equal(result.protein.grams, 150);
+  assert.equal(result.toleranceStatus, "within");
+});
+
+test("todo prato com unidade fica dentro da margem em todas as combinações reais", () => {
+  let comUnidade = 0;
   for (const person of PERSONS) {
     for (const meal of person.meals) {
-      if (!egg.meals.includes(meal.key)) continue;
-      for (const carbohydrate of foodsByCategory(
+      const carbohydrates = foodsByCategory(
         "carbohydrate",
         meal.key,
         person.excludedTags,
-      )) {
-        const result = calculatePortions({
-          meal,
-          carbohydrateFood: carbohydrate,
-          proteinFood: egg,
-          roundingIncrementGrams: person.roundingIncrementGrams,
-        });
-        const units = result.protein.units;
-        assert.ok(units !== null && units > 0);
-        assert.equal((units * 2) % 1, 0, `${person.key}/${meal.key}: ${units}`);
-        assert.equal(
-          result.toleranceStatus,
-          "within",
-          `${person.key}/${meal.key} com ${carbohydrate.id}: ${result.differencePercent}`,
-        );
+      );
+      const proteins = foodsByCategory("protein", meal.key, person.excludedTags);
+      for (const carbohydrate of carbohydrates) {
+        for (const protein of proteins) {
+          if (!carbohydrate.unit && !protein.unit) continue;
+          comUnidade += 1;
+          const result = calculatePortions({
+            meal,
+            carbohydrateFood: carbohydrate,
+            proteinFood: protein,
+            roundingIncrementGrams: person.roundingIncrementGrams,
+          });
+          for (const item of [result.carbohydrate, result.protein]) {
+            if (!item.unit) continue;
+            assert.ok(item.units !== null && item.units > 0);
+            assert.equal(
+              (item.units / item.unit.stepUnits) % 1,
+              0,
+              `${item.foodId}: ${item.units}`,
+            );
+          }
+          assert.equal(
+            result.toleranceStatus,
+            "within",
+            `${person.key}/${meal.key}: ${carbohydrate.id} + ${protein.id} ${result.differencePercent}`,
+          );
+        }
       }
     }
   }
+  assert.ok(comUnidade > 50);
 });
 
 test("ovo no café da manhã do Felipe: 4 ovos e carboidrato compensando", () => {
@@ -345,6 +376,7 @@ test("ovo no café da manhã do Felipe: 4 ovos e carboidrato compensando", () =>
   assert.equal(result.protein.units, 4);
   assert.equal(result.protein.grams, 200);
   assert.equal(result.protein.calories, 250);
+  assert.equal(result.carbohydrate.units, 1);
   assert.equal(result.carbohydrate.grams, 50);
   assert.equal(result.toleranceStatus, "within");
 });

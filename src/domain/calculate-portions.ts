@@ -46,6 +46,53 @@ function portionFor(
   };
 }
 
+interface PortionSlot {
+  food: Food;
+  share: number;
+}
+
+// Alimento contado em unidades (ovo, pão) não cabe em qualquer grama: ele
+// fecha primeiro, na unidade inteira ou pela metade, e quem vem depois tem
+// como alvo a energia que de fato sobrou da refeição. Sem unidade no prato,
+// cada alimento recebe exatamente a sua fatia da meta, como sempre.
+function allocatePortions(
+  slots: readonly PortionSlot[],
+  targetCalories: number,
+  personIncrement: number,
+): { item: PortionResultItem; calories: number }[] {
+  const portions = new Array<{ item: PortionResultItem; calories: number }>(
+    slots.length,
+  );
+  if (!slots.some((slot) => slot.food.unit)) {
+    slots.forEach((slot, index) => {
+      portions[index] = portionFor(
+        slot.food,
+        targetCalories * slot.share,
+        personIncrement,
+      );
+    });
+    return portions;
+  }
+  const unitFirst = slots
+    .map((_, index) => index)
+    .sort(
+      (a, b) =>
+        Number(Boolean(slots[b]!.food.unit)) -
+        Number(Boolean(slots[a]!.food.unit)),
+    );
+  let remaining = targetCalories;
+  let pendingShare = slots.reduce((sum, slot) => sum + slot.share, 0);
+  for (const index of unitFirst) {
+    const slot = slots[index]!;
+    const target = pendingShare > 0 ? (remaining * slot.share) / pendingShare : 0;
+    const portion = portionFor(slot.food, target, personIncrement);
+    portions[index] = portion;
+    remaining -= portion.calories;
+    pendingShare -= slot.share;
+  }
+  return portions;
+}
+
 export function calculatePortions(
   input: PortionCalculationInput,
 ): PortionCalculationResult {
@@ -56,7 +103,7 @@ export function calculatePortions(
   const carbohydrateShare = secondCarbohydrateFood
     ? input.meal.carbohydrateShare / 2
     : input.meal.carbohydrateShare;
-  const slots = [
+  const slots: PortionSlot[] = [
     { food: input.carbohydrateFood, share: carbohydrateShare },
     ...(secondCarbohydrateFood
       ? [{ food: secondCarbohydrateFood, share: carbohydrateShare }]
@@ -64,29 +111,7 @@ export function calculatePortions(
     { food: input.proteinFood, share: input.meal.proteinShare },
   ];
 
-  // Alimento contado em unidades (ovo, por exemplo) não cabe em qualquer
-  // grama: ele fecha primeiro, na unidade inteira ou pela metade, e os
-  // demais dividem a energia que sobrou da refeição. Sem unidade no prato,
-  // cada um recebe exatamente a sua fatia da meta.
-  const byUnit = slots.map((slot) =>
-    slot.food.unit
-      ? portionFor(slot.food, input.meal.targetCalories * slot.share, increment)
-      : null,
-  );
-  const spent = byUnit.reduce((sum, slot) => sum + (slot?.calories ?? 0), 0);
-  const remaining = Math.max(input.meal.targetCalories - spent, 0);
-  const flexibleShare = slots.reduce(
-    (sum, slot, index) => (byUnit[index] ? sum : sum + slot.share),
-    0,
-  );
-
-  const portions = slots.map((slot, index) => {
-    const fixed = byUnit[index];
-    if (fixed) return fixed;
-    const target = flexibleShare > 0 ? (remaining * slot.share) / flexibleShare : 0;
-    return portionFor(slot.food, target, increment);
-  });
-
+  const portions = allocatePortions(slots, input.meal.targetCalories, increment);
   const carbohydrate = portions[0]!;
   const secondCarbohydrate = secondCarbohydrateFood ? portions[1]! : null;
   const protein = portions[portions.length - 1]!;

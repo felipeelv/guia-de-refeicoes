@@ -225,6 +225,10 @@ test("contagem de unidades tem singular, plural e meia unidade", () => {
   assert.equal(formatUnits(1.5, unit), "1 ovo e ½");
   assert.equal(formatUnits(3.5, unit), "3 ovos e ½");
   assert.equal(formatUnits(1.25, unit), "1,25 ovos");
+  const bread = { singular: "pão", plural: "pães", gramsPerUnit: 50, stepUnits: 0.5 };
+  assert.equal(formatUnits(1, bread), "1 pão");
+  assert.equal(formatUnits(2, bread), "2 pães");
+  assert.equal(formatUnits(0.5, bread), "½ pão");
 });
 
 test("arredondamento por pessoa: Gabriela usa 5 g na meta de 330", () => {

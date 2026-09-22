@@ -46,9 +46,17 @@ test("unidade caseira é opcional e precisa de nome, gramas e passo válidos", (
     gramsPerUnit: 50,
     stepUnits: 0.5,
   });
-  assert.equal(
-    foods.filter((food) => food.unit !== undefined).map((food) => food.id).length,
-    1,
+  const bread = foods.find((food) => food.id === "pao-frances");
+  assert.ok(bread);
+  assert.deepEqual(bread.unit, {
+    singular: "pão",
+    plural: "pães",
+    gramsPerUnit: 50,
+    stepUnits: 0.5,
+  });
+  assert.deepEqual(
+    foods.filter((food) => food.unit !== undefined).map((food) => food.id),
+    ["pao-frances", "ovo"],
   );
   assert.equal(catalogIssue({ ...egg, unit: undefined }), null);
   assert.equal(

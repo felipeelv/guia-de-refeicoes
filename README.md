@@ -63,7 +63,7 @@ O seletor do segundo carboidrato fica recolhido até o usuário pedir. O estado 
 
 ## Alimento contado em unidades
 
-Alimento que se conta, e não se pesa, ganha um `unit` no `foods.json`. Hoje só o ovo tem:
+Alimento que se conta, e não se pesa, ganha um `unit` no `foods.json`. Hoje o ovo e o pão francês têm, os dois com 50 g por unidade e passo de meia unidade:
 
 ```json
 "unit": {
@@ -77,9 +77,9 @@ Alimento que se conta, e não se pesa, ganha um `unit` no `foods.json`. Hoje só
 - `gramsPerUnit`: peso da unidade média, parte comestível (ovo cozido: 50 g);
 - `stepUnits`: maior que zero e no máximo 1. `0.5` fecha a porção em ovo inteiro ou meio ovo.
 
-A tela mostra `4 ovos` em destaque e `200 g` como detalhe. O alimento com unidade não usa o `roundingIncrementGrams` da pessoa: ele arredonda no múltiplo do passo (`gramsPerUnit × stepUnits`), para que a contagem exibida seja exatamente a porção calculada.
+A tela mostra `4 ovos` ou `1 pão` em destaque e as gramas como detalhe. O alimento com unidade não usa o `roundingIncrementGrams` da pessoa: ele arredonda no múltiplo do passo (`gramsPerUnit × stepUnits`), para que a contagem exibida seja exatamente a porção calculada.
 
-Como esse arredondamento é mais grosso, ele fecha primeiro e o resto do prato divide a energia que sobrou da refeição, em vez da fatia fixa de 40/60. A meta da refeição continua valendo; a proporção entre carboidrato e proteína é que vira aproximada. Sem nenhum alimento com unidade no prato, o cálculo é idêntico ao de antes.
+Como esse arredondamento é mais grosso, quem tem unidade fecha primeiro e cada alimento seguinte tem como alvo a energia que de fato sobrou da refeição, em vez da fatia fixa de 40/60 — inclusive quando há dois alimentos em unidade no mesmo prato, como pão com ovo. A meta da refeição continua valendo; a proporção entre carboidrato e proteína é que vira aproximada. Sem nenhum alimento com unidade no prato, o cálculo é idêntico ao de antes.
 
 ## Incluir ou atualizar um alimento
 

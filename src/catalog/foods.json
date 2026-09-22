@@ -157,6 +157,12 @@
     "category": "carbohydrate",
     "meals": ["breakfast"],
     "preparation": "de padaria, com farinha de trigo refinada",
+    "unit": {
+      "singular": "pão",
+      "plural": "pães",
+      "gramsPerUnit": 50,
+      "stepUnits": 0.5
+    },
     "caloriesPer100g": 300,
     "proteinPer100g": 9.83,
     "carbohydratePer100g": 61.6,
