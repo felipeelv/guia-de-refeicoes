@@ -37,6 +37,42 @@ test("catálogo ativo tem identidade, preparo, energia e fonte auditável", () =
   assert.equal(foods.filter((food) => food.category === "protein").length, 12);
 });
 
+test("unidade caseira é opcional e precisa de nome, gramas e passo válidos", () => {
+  const egg = foods.find((food) => food.id === "ovo");
+  assert.ok(egg);
+  assert.deepEqual(egg.unit, {
+    singular: "ovo",
+    plural: "ovos",
+    gramsPerUnit: 50,
+    stepUnits: 0.5,
+  });
+  const bread = foods.find((food) => food.id === "pao-frances");
+  assert.ok(bread);
+  assert.deepEqual(bread.unit, {
+    singular: "pão",
+    plural: "pães",
+    gramsPerUnit: 50,
+    stepUnits: 0.5,
+  });
+  assert.deepEqual(
+    foods.filter((food) => food.unit !== undefined).map((food) => food.id),
+    ["pao-frances", "ovo"],
+  );
+  assert.equal(catalogIssue({ ...egg, unit: undefined }), null);
+  assert.equal(
+    catalogIssue({ ...egg, unit: { ...egg.unit!, gramsPerUnit: 0 } }),
+    "Gramas por unidade inválidas em ovo.",
+  );
+  assert.equal(
+    catalogIssue({ ...egg, unit: { ...egg.unit!, stepUnits: 2 } }),
+    "Passo de unidade inválido em ovo.",
+  );
+  assert.equal(
+    catalogIssue({ ...egg, unit: { ...egg.unit!, plural: " " } }),
+    "Unidade sem nome em ovo.",
+  );
+});
+
 test("cada refeição oferece só alimentos compatíveis com ela", () => {
   for (const meal of MEALS) {
     const carbohydrates = foodsByCategory("carbohydrate", meal.key);

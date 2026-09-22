@@ -1,5 +1,5 @@
 import type { Food, PortionCalculationResult, PortionResultItem } from "../domain/types.ts";
-import { formatGrams, formatMargin } from "../format.ts";
+import { formatMargin, formatPortion, formatPortionDetail } from "../format.ts";
 import { DataSourceNotice } from "./DataSourceNotice.tsx";
 
 function PortionItem({
@@ -9,13 +9,17 @@ function PortionItem({
   item: PortionResultItem;
   preparation: string;
 }) {
+  const detail = formatPortionDetail(item);
   return (
     <div>
       <p className="m-0 font-bold">{item.name}</p>
       <p className="m-0 text-sm text-guide-muted">{preparation}</p>
       <p className="m-0 mt-1 font-display text-3xl tabular-nums">
-        {formatGrams(item.grams)}
+        {formatPortion(item)}
       </p>
+      {detail ? (
+        <p className="m-0 text-sm text-guide-muted tabular-nums">{detail}</p>
+      ) : null}
     </div>
   );
 }

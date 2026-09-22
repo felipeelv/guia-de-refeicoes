@@ -61,6 +61,26 @@ Cada refeição aceita um segundo carboidrato opcional, para montar combinaçõe
 
 O seletor do segundo carboidrato fica recolhido até o usuário pedir. O estado fica na URL: `/felipe/refeicoes/lunch?carb=arroz-branco&carb2=feijao-carioca&protein=peito-de-frango`.
 
+## Alimento contado em unidades
+
+Alimento que se conta, e não se pesa, ganha um `unit` no `foods.json`. Hoje o ovo e o pão francês têm, os dois com 50 g por unidade e passo de meia unidade:
+
+```json
+"unit": {
+  "singular": "ovo",
+  "plural": "ovos",
+  "gramsPerUnit": 50,
+  "stepUnits": 0.5
+}
+```
+
+- `gramsPerUnit`: peso da unidade média, parte comestível (ovo cozido: 50 g);
+- `stepUnits`: maior que zero e no máximo 1. `0.5` fecha a porção em ovo inteiro ou meio ovo.
+
+A tela mostra `4 ovos` ou `1 pão` em destaque e as gramas como detalhe. O alimento com unidade não usa o `roundingIncrementGrams` da pessoa: ele arredonda no múltiplo do passo (`gramsPerUnit × stepUnits`), para que a contagem exibida seja exatamente a porção calculada.
+
+Como esse arredondamento é mais grosso, quem tem unidade fecha primeiro e cada alimento seguinte tem como alvo a energia que de fato sobrou da refeição, em vez da fatia fixa de 40/60 — inclusive quando há dois alimentos em unidade no mesmo prato, como pão com ovo. A meta da refeição continua valendo; a proporção entre carboidrato e proteína é que vira aproximada. Sem nenhum alimento com unidade no prato, o cálculo é idêntico ao de antes.
+
 ## Incluir ou atualizar um alimento
 
 Edite `src/catalog/foods.json`. Copie o valor da ficha específica da [TBCA](https://www.tbca.net.br/), já no estado pronto para consumo. Não busque a TBCA em tempo de execução e não misture alimento cru com cozido.
@@ -72,6 +92,7 @@ Cada item precisa de:
 - `meals` com as refeições em que o alimento aparece (`breakfast`, `lunch`, `snack`, `dinner`, `supper`);
 - `tags` opcional, com as marcações que uma pessoa pode excluir (hoje só `fruit`);
 - `preparation` com o método da ficha (por exemplo cozido ou grelhado, sem óleo);
+- `unit` opcional, quando o alimento é contado em unidades e não em colheradas (ver abaixo);
 - `caloriesPer100g` maior que zero;
 - macronutriente desconhecido como `null`, nunca zero inventado;
 - `source.name`, `source.code`, `source.url` da ficha e `source.accessedAt` em `YYYY-MM-DD`;

@@ -29,6 +29,13 @@ export interface Person {
 
 export type FoodCategory = "carbohydrate" | "protein";
 
+export interface FoodUnit {
+  singular: string;
+  plural: string;
+  gramsPerUnit: number;
+  stepUnits: number;
+}
+
 export interface FoodSource {
   name: "TBCA" | string;
   code: string;
@@ -43,6 +50,7 @@ export interface Food {
   meals: MealKey[];
   tags?: FoodTag[];
   preparation: string;
+  unit?: FoodUnit;
   caloriesPer100g: number;
   proteinPer100g: number | null;
   carbohydratePer100g: number | null;
@@ -65,6 +73,8 @@ export interface PortionResultItem {
   foodId: string;
   name: string;
   grams: number;
+  units: number | null;
+  unit: FoodUnit | null;
   calories: number;
 }
 

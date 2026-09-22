@@ -34,6 +34,18 @@ export function catalogIssue(food: Food): string | null {
       if (!TAGS.has(tag)) return `Tag inválida em ${food.id}: ${tag}.`;
     }
   }
+  if (food.unit !== undefined) {
+    const unit = food.unit;
+    if (!unit.singular?.trim() || !unit.plural?.trim()) {
+      return `Unidade sem nome em ${food.id}.`;
+    }
+    if (!Number.isFinite(unit.gramsPerUnit) || unit.gramsPerUnit <= 0) {
+      return `Gramas por unidade inválidas em ${food.id}.`;
+    }
+    if (!(unit.stepUnits > 0) || unit.stepUnits > 1) {
+      return `Passo de unidade inválido em ${food.id}.`;
+    }
+  }
   if (!Number.isFinite(food.caloriesPer100g) || food.caloriesPer100g <= 0) {
     return `Calorias inválidas em ${food.id}.`;
   }

@@ -3,7 +3,8 @@ import test from "node:test";
 import { calculatePortions } from "../src/domain/calculate-portions.ts";
 import type { Food, MealConfig, PortionCalculationInput } from "../src/domain/types.ts";
 import { PortionCalculationError } from "../src/domain/validation.ts";
-import { foods } from "../src/catalog/catalog.ts";
+import { foods, foodsByCategory } from "../src/catalog/catalog.ts";
+import { PERSONS } from "../src/catalog/persons.ts";
 import { mealByKey } from "../src/catalog/meals.ts";
 
 function food(
@@ -269,6 +270,115 @@ test("rejeita calorias inválidas, categoria trocada, participação e increment
       ),
     PortionCalculationError,
   );
+});
+
+test("alimento com unidade fecha em meia unidade e o carboidrato absorve a sobra", () => {
+  const result = calculatePortions(
+    input({
+      proteinFood: food({
+        id: "ovo-teste",
+        category: "protein",
+        caloriesPer100g: 125,
+        unit: { singular: "ovo", plural: "ovos", gramsPerUnit: 50, stepUnits: 0.5 },
+      }),
+    }),
+  );
+  assert.equal(result.protein.grams, 275);
+  assert.equal(result.protein.units, 5.5);
+  assert.equal(result.protein.unit?.singular, "ovo");
+  assert.equal(result.protein.grams % 25, 0);
+  assert.equal(result.carbohydrate.units, null);
+  assert.equal(result.carbohydrate.unit, null);
+  assert.equal(result.carbohydrate.grams, 160);
+  assert.equal(result.toleranceStatus, "within");
+
+  const semUnidade = calculatePortions(input());
+  assert.equal(semUnidade.carbohydrate.grams, 170);
+  assert.equal(semUnidade.protein.units, null);
+});
+
+test("pão e ovo juntos: cada um fecha na unidade e o segundo usa o que sobrou", () => {
+  const kelly = PERSONS.find((person) => person.key === "kelly");
+  assert.ok(kelly);
+  const breakfast = kelly.meals.find((meal) => meal.key === "breakfast");
+  assert.ok(breakfast);
+  const bread = foods.find((item) => item.id === "pao-frances");
+  const egg = foods.find((item) => item.id === "ovo");
+  assert.ok(bread && egg);
+  const result = calculatePortions({
+    meal: breakfast,
+    carbohydrateFood: bread,
+    proteinFood: egg,
+    roundingIncrementGrams: kelly.roundingIncrementGrams,
+  });
+  assert.equal(result.carbohydrate.units, 0.5);
+  assert.equal(result.carbohydrate.grams, 25);
+  assert.equal(result.protein.units, 3);
+  assert.equal(result.protein.grams, 150);
+  assert.equal(result.toleranceStatus, "within");
+});
+
+test("todo prato com unidade fica dentro da margem em todas as combinações reais", () => {
+  let comUnidade = 0;
+  for (const person of PERSONS) {
+    for (const meal of person.meals) {
+      const carbohydrates = foodsByCategory(
+        "carbohydrate",
+        meal.key,
+        person.excludedTags,
+      );
+      const proteins = foodsByCategory("protein", meal.key, person.excludedTags);
+      for (const carbohydrate of carbohydrates) {
+        for (const protein of proteins) {
+          if (!carbohydrate.unit && !protein.unit) continue;
+          comUnidade += 1;
+          const result = calculatePortions({
+            meal,
+            carbohydrateFood: carbohydrate,
+            proteinFood: protein,
+            roundingIncrementGrams: person.roundingIncrementGrams,
+          });
+          for (const item of [result.carbohydrate, result.protein]) {
+            if (!item.unit) continue;
+            assert.ok(item.units !== null && item.units > 0);
+            assert.equal(
+              (item.units / item.unit.stepUnits) % 1,
+              0,
+              `${item.foodId}: ${item.units}`,
+            );
+          }
+          assert.equal(
+            result.toleranceStatus,
+            "within",
+            `${person.key}/${meal.key}: ${carbohydrate.id} + ${protein.id} ${result.differencePercent}`,
+          );
+        }
+      }
+    }
+  }
+  assert.ok(comUnidade > 50);
+});
+
+test("ovo no café da manhã do Felipe: 4 ovos e carboidrato compensando", () => {
+  const felipe = PERSONS.find((person) => person.key === "felipe");
+  assert.ok(felipe);
+  const breakfast = felipe.meals.find((meal) => meal.key === "breakfast");
+  assert.ok(breakfast);
+  const egg = foods.find((item) => item.id === "ovo");
+  const bread = foods.find((item) => item.id === "pao-frances");
+  assert.ok(egg && bread);
+  const result = calculatePortions({
+    meal: breakfast,
+    carbohydrateFood: bread,
+    proteinFood: egg,
+    roundingIncrementGrams: felipe.roundingIncrementGrams,
+  });
+  assert.equal(result.protein.units, 4);
+  assert.equal(result.protein.grams, 200);
+  assert.equal(result.protein.calories, 250);
+  assert.equal(result.carbohydrate.units, 1);
+  assert.equal(result.carbohydrate.grams, 50);
+  assert.equal(result.toleranceStatus, "within");
 });
 
 test("é determinístico e não muta a entrada", () => {
