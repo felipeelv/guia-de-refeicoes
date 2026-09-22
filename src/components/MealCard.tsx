@@ -37,7 +37,7 @@ export function MealCard({
           wide ? "max-w-[58%]" : "max-w-[62%]"
         }`}
       >
-        <span className="font-display text-lg leading-tight font-medium text-pretty">
+        <span className="font-display text-lg leading-tight text-pretty">
           {meal.label}
         </span>
         <span className="text-xs leading-snug text-guide-muted text-pretty">

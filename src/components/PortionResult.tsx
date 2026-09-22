@@ -13,7 +13,7 @@ function PortionItem({
     <div>
       <p className="m-0 font-bold">{item.name}</p>
       <p className="m-0 text-sm text-guide-muted">{preparation}</p>
-      <p className="m-0 mt-1 font-display text-3xl font-medium tabular-nums">
+      <p className="m-0 mt-1 font-display text-3xl tabular-nums">
         {formatGrams(item.grams)}
         <span className="ml-2 font-sans text-base font-bold text-guide-muted">
           · {formatKcal(item.calories)}
@@ -63,7 +63,7 @@ export function PortionResult({
         <p className="m-0 text-xs font-bold tracking-[0.16em] text-guide-muted uppercase">
           Total estimado
         </p>
-        <p className="m-0 font-display text-3xl font-medium tabular-nums">
+        <p className="m-0 font-display text-3xl tabular-nums">
           {formatKcal(result.totalCalories)}
         </p>
         <p className="m-0 mt-1">Meta: {formatKcal(result.targetCalories)}</p>

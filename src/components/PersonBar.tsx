@@ -49,7 +49,7 @@ export function PersonBar({ person }: { person: Person }) {
       <div className="mx-auto flex w-full max-w-md items-center justify-between gap-3 px-4 py-2.5">
         <Link
           to={`/${person.key}`}
-          className="min-w-0 truncate font-display text-base font-medium whitespace-nowrap text-guide-ink no-underline"
+          className="min-w-0 truncate font-display text-base whitespace-nowrap text-guide-ink no-underline"
         >
           Guia de refeições
         </Link>

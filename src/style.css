@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", serif;
-  --font-sans: "Atkinson Hyperlegible", "Lucida Sans Unicode", sans-serif;
+  --font-display: "Inter", "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Inter", "SF Pro Text", "Segoe UI", system-ui, sans-serif;
 
   --color-guide-ink: #1f1a17;
   --color-guide-muted: #6b6259;
@@ -37,6 +37,9 @@ body {
   min-height: 100dvh;
   font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   touch-action: manipulation;
   -webkit-tap-highlight-color: rgb(194 85 31 / 0.16);
 }
@@ -52,6 +55,13 @@ body {
 
 .font-display {
   font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+h1.font-display {
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .person-select:has(:focus-visible) {
