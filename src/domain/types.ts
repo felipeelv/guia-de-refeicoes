@@ -14,7 +14,7 @@ export interface MealConfig {
   order: number;
 }
 
-export type PersonKey = "felipe" | "gabriela";
+export type PersonKey = "felipe" | "gabriela" | "kelly";
 
 export type FoodTag = "fruit";
 

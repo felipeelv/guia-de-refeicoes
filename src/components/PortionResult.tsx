@@ -1,5 +1,5 @@
 import type { Food, PortionCalculationResult, PortionResultItem } from "../domain/types.ts";
-import { formatDifference, formatGrams, formatKcal } from "../format.ts";
+import { formatGrams, formatMargin } from "../format.ts";
 import { DataSourceNotice } from "./DataSourceNotice.tsx";
 
 function PortionItem({
@@ -15,9 +15,6 @@ function PortionItem({
       <p className="m-0 text-sm text-guide-muted">{preparation}</p>
       <p className="m-0 mt-1 font-display text-3xl tabular-nums">
         {formatGrams(item.grams)}
-        <span className="ml-2 font-sans text-base font-bold text-guide-muted">
-          · {formatKcal(item.calories)}
-        </span>
       </p>
     </div>
   );
@@ -60,14 +57,7 @@ export function PortionResult({
         </div>
       ))}
       <div className="border-t border-guide-line pt-3">
-        <p className="m-0 text-xs font-bold tracking-[0.16em] text-guide-muted uppercase">
-          Total estimado
-        </p>
-        <p className="m-0 font-display text-3xl tabular-nums">
-          {formatKcal(result.totalCalories)}
-        </p>
-        <p className="m-0 mt-1">Meta: {formatKcal(result.targetCalories)}</p>
-        <p className="m-0 mt-1 font-bold text-guide-accent">{formatDifference(result)}</p>
+        <p className="m-0 font-bold text-guide-accent">{formatMargin(result)}</p>
       </div>
       <DataSourceNotice foods={foods} />
     </section>

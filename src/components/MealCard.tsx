@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import type { MealConfig, PersonKey } from "../domain/types.ts";
-import { formatKcal } from "../format.ts";
 import { MEAL_VISUALS } from "./MealVisuals.tsx";
 
 export function MealCard({
@@ -43,10 +42,6 @@ export function MealCard({
         <span className="text-xs leading-snug text-guide-muted text-pretty">
           {" "}
           {visual.descriptor}
-        </span>
-        <span className="mt-1 text-lg font-bold tabular-nums">
-          {" "}
-          {formatKcal(meal.targetCalories)}
         </span>
       </span>
     </Link>

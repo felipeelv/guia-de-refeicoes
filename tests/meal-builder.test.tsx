@@ -107,19 +107,18 @@ test("lista as cinco refeições do Felipe com metas fixas e sem acompanhamento"
     </MemoryRouter>,
   );
   assert.match(html, /Cardápio de Felipe/);
-  assert.match(html, /2.000 kcal/);
   assert.match(html, /Escolha uma refeição para calcular as porções/);
-  for (const snippet of ["400 kcal", "550 kcal", "300 kcal", "200 kcal"]) {
-    assert.match(html, new RegExp(snippet));
+  for (const label of ["Café da manhã", "Almoço", "Lanche", "Jantar", "Ceia"]) {
+    assert.match(html, new RegExp(label));
   }
-  assert.equal(html.match(/550 kcal/g)?.length, 2);
+  assert.doesNotMatch(html, /kcal/);
   assert.equal(html.match(/href="\/felipe\/refeicoes\//g)?.length, 5);
   for (const forbidden of ["Lançar", "Salvar", "Consumir", "Histórico", "Restante"]) {
     assert.equal(html.toLowerCase().includes(forbidden.toLowerCase()), false);
   }
 });
 
-test("lista as metas de 1200 kcal da Gabriela", () => {
+test("a home da Gabriela também não mostra calorias", () => {
   const person = personByKey("gabriela");
   assert.ok(person);
   const html = renderToStaticMarkup(
@@ -128,12 +127,7 @@ test("lista as metas de 1200 kcal da Gabriela", () => {
     </MemoryRouter>,
   );
   assert.match(html, /Cardápio de Ana Gabriela/);
-  assert.match(html, /1.200 kcal/);
-  for (const snippet of ["240 kcal", "330 kcal", "180 kcal", "120 kcal"]) {
-    assert.match(html, new RegExp(snippet));
-  }
-  assert.equal(html.match(/330 kcal/g)?.length, 2);
-  assert.doesNotMatch(html, /550 kcal/);
+  assert.doesNotMatch(html, /kcal/);
   assert.equal(html.match(/href="\/gabriela\/refeicoes\//g)?.length, 5);
 });
 
@@ -141,22 +135,21 @@ test("não mostra resultado antes das duas escolhas e anuncia a espera", () => {
   const empty = markup(null, null);
   assert.match(empty, /Escolha um carboidrato e uma proteína/);
   assert.match(empty, /aria-live="polite"/);
-  assert.doesNotMatch(empty, /Total estimado/);
+  assert.doesNotMatch(empty, /dentro da margem/);
+  assert.doesNotMatch(empty, /kcal/);
   const proteinOnly = markup(null, "frango");
   assert.match(proteinOnly, /Agora escolha o carboidrato/);
   const carbohydrateOnly = markup("arroz", null);
   assert.match(carbohydrateOnly, /Agora escolha a proteína/);
 });
 
-test("mostra porções, preparo, fonte e diferença sem igualar o total à meta", () => {
+test("mostra porções em gramas, preparo, fonte e margem, mas nenhuma caloria", () => {
   const html = markup("arroz", "frango");
   assert.match(html, /170 g/);
-  assert.match(html, /221 kcal/);
   assert.match(html, /180 g/);
-  assert.match(html, /324 kcal/);
-  assert.match(html, /Total estimado/);
-  assert.match(html, /545 kcal/);
-  assert.match(html, /5 kcal abaixo da meta · dentro da margem/);
+  assert.match(html, /Porções dentro da margem/);
+  assert.doesNotMatch(html, /kcal/);
+  assert.doesNotMatch(html, /Total estimado|Meta:/);
   assert.match(html, /cozido, sem óleo/);
   assert.match(html, /grelhado, sem óleo/);
   assert.match(html, /TBCA/);
@@ -178,13 +171,10 @@ test("segundo carboidrato fica recolhido e divide a porção dos dois", () => {
   assert.match(both, /Sem segundo carboidrato/);
   assert.doesNotMatch(both, new RegExp(ADD_SECOND_CARBOHYDRATE_LABEL));
   assert.match(both, /80 g/);
-  assert.match(both, /104 kcal/);
   assert.match(both, /150 g/);
-  assert.match(both, /107 kcal/);
   assert.match(both, /180 g/);
-  assert.match(both, /Total estimado/);
-  assert.match(both, /535 kcal/);
-  assert.match(both, /15 kcal abaixo da meta · dentro da margem/);
+  assert.match(both, /Porções dentro da margem/);
+  assert.doesNotMatch(both, /kcal/);
   assert.match(both, /cozido com caldo/);
   assert.doesNotMatch(both, /170 g/);
   assert.doesNotMatch(both, /<input(?![^>]*type="radio")/);
@@ -196,15 +186,16 @@ test("o mesmo alimento não aparece nos dois seletores de carboidrato", () => {
   assert.equal(html.match(/value="feijao"/g)?.length, 2);
 });
 
-test("cada tile mostra preparo e energia por 100 g, com etapas visíveis", () => {
+test("cada tile mostra nome e preparo, sem energia, com etapas visíveis", () => {
   const html = markup("arroz", null, [rice, beans]);
-  assert.match(html, /130 kcal<\/span><span[^>]*> \/ 100 g/);
-  assert.match(html, /71 kcal/);
+  assert.match(html, /Arroz branco/);
+  assert.match(html, /cozido com caldo/);
+  assert.doesNotMatch(html, /kcal|100 g/);
   assert.match(html, /aria-label="Etapas"/);
   assert.equal(html.match(/aria-current="step"/g)?.length, 1);
 });
 
-test("arredondamento por pessoa: Gabriela usa 5 g na meta de 330 kcal", () => {
+test("arredondamento por pessoa: Gabriela usa 5 g na meta de 330", () => {
   const gabriela = PERSONS.find((person) => person.key === "gabriela");
   assert.ok(gabriela);
   const lunchOnly: Person = {
@@ -213,15 +204,11 @@ test("arredondamento por pessoa: Gabriela usa 5 g na meta de 330 kcal", () => {
     meals: gabriela.meals.filter((meal) => meal.key === "lunch"),
   };
   const html = markup("arroz", "frango", [rice], null, lunchOnly);
-  assert.match(html, /Meta de Ana Gabriela/);
-  assert.match(html, /330 kcal/);
+  assert.match(html, /Cardápio de Ana Gabriela/);
   assert.match(html, /100 g/);
-  assert.match(html, /130 kcal/);
   assert.match(html, /110 g/);
-  assert.match(html, /198 kcal/);
-  assert.match(html, /Total estimado/);
-  assert.match(html, /328 kcal/);
-  assert.match(html, /2 kcal abaixo da meta · dentro da margem/);
+  assert.match(html, /Porções dentro da margem/);
+  assert.doesNotMatch(html, /kcal/);
 });
 
 test("erro de cálculo não quebra a tela nem exibe NaN", () => {
@@ -230,5 +217,5 @@ test("erro de cálculo não quebra a tela nem exibe NaN", () => {
   ]);
   assert.match(html, new RegExp(CALCULATION_ERROR_MESSAGE));
   assert.doesNotMatch(html, /NaN|Infinity/);
-  assert.doesNotMatch(html, /Total estimado/);
+  assert.doesNotMatch(html, /dentro da margem/);
 });

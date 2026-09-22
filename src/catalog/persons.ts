@@ -35,6 +35,20 @@ export const PERSONS: Person[] = [
       supper: 120,
     }),
   },
+  {
+    key: "kelly",
+    name: "Kelly",
+    dailyCalories: 1300,
+    roundingIncrementGrams: 5,
+    excludedTags: [],
+    meals: mealsWithTargets({
+      breakfast: 260,
+      lunch: 355,
+      snack: 200,
+      dinner: 355,
+      supper: 130,
+    }),
+  },
 ];
 
 assertPersonConfigs(PERSONS);

@@ -6,25 +6,14 @@ export function formatNumber(value: number): string {
   return numberFormat.format(value);
 }
 
-export function formatKcal(value: number): string {
-  return `${formatNumber(value)} kcal`;
-}
-
 export function formatGrams(value: number): string {
   return `${formatNumber(value)} g`;
 }
 
-export function formatDifference(result: PortionCalculationResult): string {
-  const margin =
-    result.toleranceStatus === "within"
-      ? "dentro da margem"
-      : result.toleranceStatus === "below"
-        ? "abaixo da margem"
-        : "acima da margem";
-  if (result.differenceCalories === 0) return `Na meta · ${margin}`;
-  const direction =
-    result.differenceCalories < 0 ? "abaixo da meta" : "acima da meta";
-  return `${formatKcal(Math.abs(result.differenceCalories))} ${direction} · ${margin}`;
+export function formatMargin(result: PortionCalculationResult): string {
+  if (result.toleranceStatus === "within") return "Porções dentro da margem";
+  if (result.toleranceStatus === "below") return "Porções um pouco abaixo da margem";
+  return "Porções um pouco acima da margem";
 }
 
 export const CALCULATION_ERROR_MESSAGE =
