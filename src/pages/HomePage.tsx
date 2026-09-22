@@ -1,8 +1,11 @@
+import { useOutletContext } from "react-router-dom";
 import { MealCard } from "../components/MealCard.tsx";
 import { mealsInOrder } from "../catalog/meals.ts";
+import type { Person } from "../domain/types.ts";
+import { formatKcal } from "../format.ts";
 
-export function HomePage() {
-  const meals = mealsInOrder();
+export function HomeScreen({ person }: { person: Person }) {
+  const meals = mealsInOrder(person.meals);
   return (
     <main className="mx-auto grid w-full max-w-md gap-6 px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
       <header className="grid gap-2">
@@ -10,10 +13,13 @@ export function HomePage() {
           Ficha de porções
         </p>
         <h1 className="font-display m-0 text-4xl leading-tight font-medium text-pretty">
-          Guia de refeições
+          Cardápio de {person.name}
         </h1>
         <p className="m-0 text-guide-muted text-pretty">
-          Escolha uma refeição para calcular as porções.
+          <span className="font-bold text-guide-ink tabular-nums">
+            {formatKcal(person.dailyCalories)}
+          </span>{" "}
+          por dia. Escolha uma refeição para calcular as porções.
         </p>
       </header>
       <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0">
@@ -21,7 +27,7 @@ export function HomePage() {
           const wide = index === meals.length - 1 && meals.length % 2 === 1;
           return (
             <li key={meal.key} className={`rise ${wide ? "col-span-2" : ""}`}>
-              <MealCard meal={meal} wide={wide} />
+              <MealCard meal={meal} personKey={person.key} wide={wide} />
             </li>
           );
         })}
@@ -32,4 +38,9 @@ export function HomePage() {
       </p>
     </main>
   );
+}
+
+export function HomePage() {
+  const person = useOutletContext<Person>();
+  return <HomeScreen person={person} />;
 }

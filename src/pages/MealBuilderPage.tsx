@@ -1,11 +1,13 @@
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useOutletContext, useParams, useSearchParams } from "react-router-dom";
 import { MealBuilderScreen } from "../components/MealBuilder.tsx";
 import { foodsByCategory } from "../catalog/catalog.ts";
 import { mealByKey } from "../catalog/meals.ts";
+import type { Person } from "../domain/types.ts";
 
 export function MealBuilderPage() {
+  const person = useOutletContext<Person>();
   const { mealKey } = useParams();
-  const meal = mealByKey(mealKey);
+  const meal = mealByKey(mealKey, person.meals);
   const [params, setParams] = useSearchParams();
   if (!meal) {
     return (
@@ -20,7 +22,7 @@ export function MealBuilderPage() {
           Essa refeição não faz parte do guia. Escolha outra na lista.
         </p>
         <Link
-          to="/"
+          to={`/${person.key}`}
           className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-guide-accent px-4 text-center font-bold text-white no-underline hover:bg-guide-focus"
         >
           Escolher outra refeição
@@ -39,9 +41,10 @@ export function MealBuilderPage() {
   }
   return (
     <MealBuilderScreen
+      person={person}
       meal={meal}
-      carbohydrates={foodsByCategory("carbohydrate", meal.key)}
-      proteins={foodsByCategory("protein", meal.key)}
+      carbohydrates={foodsByCategory("carbohydrate", meal.key, person.excludedTags)}
+      proteins={foodsByCategory("protein", meal.key, person.excludedTags)}
       carbohydrateId={carbohydrateId}
       secondCarbohydrateId={secondCarbohydrateId}
       proteinId={proteinId}
