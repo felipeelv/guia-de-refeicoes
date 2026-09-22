@@ -279,6 +279,18 @@ test("URLs antigas e pessoas desconhecidas caem na pessoa padrão", async ({
     "/felipe/refeicoes/lunch?carb=arroz-branco&carb2=arroz-branco&protein=peito-de-frango",
   );
   await expect(page.locator("[aria-live='polite']")).toContainText("170 g");
+  await page.goto("/felipe");
+  const people = page.getByRole("combobox", { name: "Pessoa" });
+  await expect(people.getByRole("option")).toHaveText(["Felipe", "Ana Gabriela", "Kelly"]);
+  await people.selectOption("kelly");
+  await expect(page).toHaveURL(/\/kelly$/);
+  await expect(page.getByRole("heading", { name: "Cardápio de Kelly" })).toBeVisible();
+  await page.goto("/kelly/refeicoes/lunch?carb=arroz-branco&protein=peito-de-frango");
+  const kellyLive = page.locator("[aria-live='polite']");
+  await expect(kellyLive).toContainText("110 g");
+  await expect(kellyLive).toContainText("140 g");
+  await expect(kellyLive).toContainText("Porções dentro da margem");
+  await expect(kellyLive).not.toContainText("kcal");
   await page.goto("/ninguem/refeicoes/lunch");
   await expect(page).toHaveURL(/\/felipe$/);
   await page.goto("/felipe/refeicoes/brunch");

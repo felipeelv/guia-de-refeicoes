@@ -4,7 +4,7 @@ Consulta de porções para uma meta calórica fixa, com um cardápio por pessoa.
 
 As calorias existem só na configuração e no cálculo. A tela mostra apenas gramas e um aviso de margem, sem números de energia, para evitar o efeito psicológico de contar calorias.
 
-Hoje existem duas pessoas: Felipe (2000 kcal por dia, sem fruta, porções de 10 em 10 g) e Ana Gabriela (1200 kcal por dia, porções de 5 em 5 g). O dropdown no topo troca a pessoa e mantém a refeição e os alimentos ainda válidos.
+Hoje existem três pessoas: Felipe (2000 kcal por dia, sem fruta, porções de 10 em 10 g), Ana Gabriela (1200 kcal por dia, porções de 5 em 5 g) e Kelly (1300 kcal por dia, porções de 5 em 5 g). O dropdown no topo troca a pessoa e mantém a refeição e os alimentos ainda válidos.
 
 ## Executar
 

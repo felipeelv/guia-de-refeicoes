@@ -106,13 +106,14 @@ test("frutas têm tag e ficam fora do cardápio de quem exclui a tag", () => {
   );
 });
 
-test("Felipe e Gabriela têm metas fechadas, alimentos por refeição e arredondamento próprio", () => {
+test("Felipe, Gabriela e Kelly têm metas fechadas, alimentos por refeição e arredondamento próprio", () => {
   assert.equal(personConfigError(PERSONS), null);
   assert.deepEqual(
     PERSONS.map((person) => [person.key, person.name, person.dailyCalories]),
     [
       ["felipe", "Felipe", 2000],
       ["gabriela", "Ana Gabriela", 1200],
+      ["kelly", "Kelly", 1300],
     ],
   );
   assert.equal(DEFAULT_PERSON.key, "felipe");
@@ -134,6 +135,20 @@ test("Felipe e Gabriela têm metas fechadas, alimentos por refeição e arredond
       ["Lanche", 180],
       ["Jantar", 330],
       ["Ceia", 120],
+    ],
+  );
+  const kelly = personByKey("kelly");
+  assert.ok(kelly);
+  assert.deepEqual(kelly.excludedTags, []);
+  assert.equal(kelly.roundingIncrementGrams, 5);
+  assert.deepEqual(
+    mealsInOrder(kelly.meals).map((meal) => [meal.label, meal.targetCalories]),
+    [
+      ["Café da manhã", 260],
+      ["Almoço", 355],
+      ["Lanche", 200],
+      ["Jantar", 355],
+      ["Ceia", 130],
     ],
   );
   for (const person of PERSONS) {
