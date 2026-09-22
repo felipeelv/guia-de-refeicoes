@@ -2,9 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter } from "react-router-dom";
-import { MealBuilderScreen } from "../src/components/MealBuilder.tsx";
-import { HomePage } from "../src/pages/HomePage.tsx";
-import type { Food, MealConfig } from "../src/domain/types.ts";
+import {
+  ADD_SECOND_CARBOHYDRATE_LABEL,
+  MealBuilderScreen,
+} from "../src/components/MealBuilder.tsx";
+import { HomeScreen } from "../src/pages/HomePage.tsx";
+import { PERSONS, personByKey } from "../src/catalog/persons.ts";
+import type { Food, MealConfig, Person } from "../src/domain/types.ts";
 import { CALCULATION_ERROR_MESSAGE } from "../src/format.ts";
 
 const lunch: MealConfig = {
@@ -14,6 +18,15 @@ const lunch: MealConfig = {
   carbohydrateShare: 0.4,
   proteinShare: 0.6,
   order: 2,
+};
+
+const felipe: Person = {
+  key: "felipe",
+  name: "Felipe",
+  dailyCalories: 550,
+  roundingIncrementGrams: 10,
+  excludedTags: ["fruit"],
+  meals: [lunch],
 };
 
 function food(
@@ -65,11 +78,13 @@ function markup(
   proteinId: string | null,
   carbohydrates = [rice],
   secondCarbohydrateId: string | null = null,
+  person: Person = felipe,
 ) {
   return renderToStaticMarkup(
     <MemoryRouter>
       <MealBuilderScreen
-        meal={lunch}
+        person={person}
+        meal={person.meals[0] ?? lunch}
         carbohydrates={carbohydrates}
         proteins={[chicken]}
         carbohydrateId={carbohydrateId}
@@ -83,21 +98,43 @@ function markup(
   );
 }
 
-test("lista as cinco refeições com metas fixas e sem acompanhamento", () => {
+test("lista as cinco refeições do Felipe com metas fixas e sem acompanhamento", () => {
+  const person = personByKey("felipe");
+  assert.ok(person);
   const html = renderToStaticMarkup(
     <MemoryRouter>
-      <HomePage />
+      <HomeScreen person={person} />
     </MemoryRouter>,
   );
-  assert.match(html, /Guia de refeições/);
+  assert.match(html, /Cardápio de Felipe/);
+  assert.match(html, /2.000 kcal/);
   assert.match(html, /Escolha uma refeição para calcular as porções/);
   for (const snippet of ["400 kcal", "550 kcal", "300 kcal", "200 kcal"]) {
     assert.match(html, new RegExp(snippet));
   }
   assert.equal(html.match(/550 kcal/g)?.length, 2);
+  assert.equal(html.match(/href="\/felipe\/refeicoes\//g)?.length, 5);
   for (const forbidden of ["Lançar", "Salvar", "Consumir", "Histórico", "Restante"]) {
     assert.equal(html.toLowerCase().includes(forbidden.toLowerCase()), false);
   }
+});
+
+test("lista as metas de 1200 kcal da Gabriela", () => {
+  const person = personByKey("gabriela");
+  assert.ok(person);
+  const html = renderToStaticMarkup(
+    <MemoryRouter>
+      <HomeScreen person={person} />
+    </MemoryRouter>,
+  );
+  assert.match(html, /Cardápio de Ana Gabriela/);
+  assert.match(html, /1.200 kcal/);
+  for (const snippet of ["240 kcal", "330 kcal", "180 kcal", "120 kcal"]) {
+    assert.match(html, new RegExp(snippet));
+  }
+  assert.equal(html.match(/330 kcal/g)?.length, 2);
+  assert.doesNotMatch(html, /550 kcal/);
+  assert.equal(html.match(/href="\/gabriela\/refeicoes\//g)?.length, 5);
 });
 
 test("não mostra resultado antes das duas escolhas e anuncia a espera", () => {
@@ -128,14 +165,18 @@ test("mostra porções, preparo, fonte e diferença sem igualar o total à meta"
   assert.doesNotMatch(html, /<input(?![^>]*type="radio")/);
 });
 
-test("segundo carboidrato é opcional e divide a porção dos dois", () => {
+test("segundo carboidrato fica recolhido e divide a porção dos dois", () => {
   const alone = markup("arroz", "frango", [rice, beans]);
-  assert.match(alone, /Segundo carboidrato \(opcional\)/);
-  assert.match(alone, /Sem segundo carboidrato/);
+  assert.match(alone, new RegExp(ADD_SECOND_CARBOHYDRATE_LABEL));
+  assert.doesNotMatch(alone, /Segundo carboidrato \(opcional\)/);
+  assert.doesNotMatch(alone, /Sem segundo carboidrato/);
   assert.match(alone, /170 g/);
   assert.doesNotMatch(alone, /150 g/);
 
   const both = markup("arroz", "frango", [rice, beans], "feijao");
+  assert.match(both, /Segundo carboidrato \(opcional\)/);
+  assert.match(both, /Sem segundo carboidrato/);
+  assert.doesNotMatch(both, new RegExp(ADD_SECOND_CARBOHYDRATE_LABEL));
   assert.match(both, /80 g/);
   assert.match(both, /104 kcal/);
   assert.match(both, /150 g/);
@@ -150,9 +191,37 @@ test("segundo carboidrato é opcional e divide a porção dos dois", () => {
 });
 
 test("o mesmo alimento não aparece nos dois seletores de carboidrato", () => {
-  const html = markup("arroz", "frango", [rice, beans]);
+  const html = markup("arroz", "frango", [rice, beans], "feijao");
   assert.equal(html.match(/value="arroz"/g)?.length, 1);
   assert.equal(html.match(/value="feijao"/g)?.length, 2);
+});
+
+test("cada tile mostra preparo e energia por 100 g, com etapas visíveis", () => {
+  const html = markup("arroz", null, [rice, beans]);
+  assert.match(html, /130 kcal<\/span><span[^>]*> \/ 100 g/);
+  assert.match(html, /71 kcal/);
+  assert.match(html, /aria-label="Etapas"/);
+  assert.equal(html.match(/aria-current="step"/g)?.length, 1);
+});
+
+test("arredondamento por pessoa: Gabriela usa 5 g na meta de 330 kcal", () => {
+  const gabriela = PERSONS.find((person) => person.key === "gabriela");
+  assert.ok(gabriela);
+  const lunchOnly: Person = {
+    ...gabriela,
+    dailyCalories: 330,
+    meals: gabriela.meals.filter((meal) => meal.key === "lunch"),
+  };
+  const html = markup("arroz", "frango", [rice], null, lunchOnly);
+  assert.match(html, /Meta de Ana Gabriela/);
+  assert.match(html, /330 kcal/);
+  assert.match(html, /100 g/);
+  assert.match(html, /130 kcal/);
+  assert.match(html, /110 g/);
+  assert.match(html, /198 kcal/);
+  assert.match(html, /Total estimado/);
+  assert.match(html, /328 kcal/);
+  assert.match(html, /2 kcal abaixo da meta · dentro da margem/);
 });
 
 test("erro de cálculo não quebra a tela nem exibe NaN", () => {
