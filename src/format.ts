@@ -17,6 +17,10 @@ export function formatGrams(value: number): string {
   return `${formatNumber(value)} g`;
 }
 
+export function formatKcal(value: number): string {
+  return `${formatNumber(value)} kcal`;
+}
+
 export function formatUnits(units: number, unit: FoodUnit): string {
   const whole = Math.floor(units + 1e-9);
   const rest = units - whole;

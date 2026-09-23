@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "tsx --tsconfig tsconfig.app.json --test tests/catalog.test.ts tests/calculate-portions.test.ts tests/meal-builder.test.tsx",
+    "test": "tsx --tsconfig tsconfig.app.json --test tests/catalog.test.ts tests/calculate-portions.test.ts tests/meal-builder.test.tsx tests/day-log.test.ts",
     "catalog:push": "tsx scripts/push-catalog.ts",
     "e2e": "playwright test"
   },

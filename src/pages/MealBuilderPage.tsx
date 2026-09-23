@@ -1,11 +1,13 @@
 import { Link, useOutletContext, useParams, useSearchParams } from "react-router-dom";
 import { MealBuilderScreen } from "../components/MealBuilder.tsx";
 import { foodsByCategory } from "../catalog/catalog.ts";
+import { useCatalog } from "../catalog/context.tsx";
 import { mealByKey } from "../catalog/meals.ts";
 import type { Person } from "../domain/types.ts";
 
 export function MealBuilderPage() {
   const person = useOutletContext<Person>();
+  const { foods } = useCatalog();
   const { mealKey } = useParams();
   const meal = mealByKey(mealKey, person.meals);
   const [params, setParams] = useSearchParams();
@@ -43,8 +45,8 @@ export function MealBuilderPage() {
     <MealBuilderScreen
       person={person}
       meal={meal}
-      carbohydrates={foodsByCategory("carbohydrate", meal.key, person.excludedTags)}
-      proteins={foodsByCategory("protein", meal.key, person.excludedTags)}
+      carbohydrates={foodsByCategory("carbohydrate", meal.key, person.excludedTags, foods)}
+      proteins={foodsByCategory("protein", meal.key, person.excludedTags, foods)}
       carbohydrateId={carbohydrateId}
       secondCarbohydrateId={secondCarbohydrateId}
       proteinId={proteinId}

@@ -1,8 +1,8 @@
 # Guia de montagem de refeições
 
-Consulta de porções para uma meta calórica fixa, com um cardápio por pessoa. O app roda só no navegador: não tem login nem backend; o cardápio vem dos dados locais ou do Global Config. A caloria da refeição não muda. O alimento muda. A porção se adapta.
+Consulta de porções para uma meta calórica fixa, com um cardápio por pessoa. O app roda só no navegador: não tem login nem backend; o cardápio vem dos dados locais ou do Global Config, e o diário de consumo fica no localStorage do dispositivo. A caloria da refeição não muda. O alimento muda. A porção se adapta.
 
-As calorias existem só na configuração e no cálculo. A tela mostra apenas gramas e um aviso de margem, sem números de energia, para evitar o efeito psicológico de contar calorias.
+As calorias existem na configuração, no cálculo e na aba Diário. Fora do Diário, a tela mostra apenas gramas e um aviso de margem, sem números de energia, para evitar o efeito psicológico de contar calorias.
 
 Hoje existem três pessoas: Felipe (2000 kcal por dia, sem fruta, porções de 10 em 10 g), Ana Gabriela (1200 kcal por dia, porções de 5 em 5 g) e Kelly (1300 kcal por dia, porções de 5 em 5 g). O dropdown no topo troca a pessoa e mantém a refeição e os alimentos ainda válidos.
 
@@ -80,6 +80,14 @@ A proporção divide a energia da refeição entre carboidrato e proteína. Ela 
 Cada refeição aceita um segundo carboidrato opcional, para montar combinações como arroz com feijão. Com dois carboidratos, a fatia de energia do carboidrato é dividida ao meio entre eles; a proteína não muda. O mesmo alimento não pode ocupar as duas posições e não aparece no segundo seletor.
 
 O seletor do segundo carboidrato fica recolhido até o usuário pedir. O estado fica na URL: `/felipe/refeicoes/lunch?carb=arroz-branco&carb2=feijao-carioca&protein=peito-de-frango`.
+
+## Diário e ajuste do cardápio
+
+A aba Diário (`/:pessoa/diario`) registra o que foi comido no dia: refeição, alimento e quantidade (gramas, ou unidades para ovo e pão). É a única tela que mostra calorias: a soma do dia contra a meta diária, com barra de progresso e o consumo por refeição. No resultado do builder, o botão "Registrar esta refeição" lança as porções calculadas direto no diário.
+
+Refeições com registros contam como já comidas. As demais têm a meta reescalonada na proporção do orçamento restante: `fator = (calorias diárias − consumido) ÷ soma das metas restantes`, com piso em zero. Quem comeu demais no almoço vê as porções do lanche, do jantar e da ceia encolherem em gramas; quem comeu de menos vê crescerem. O ajuste é invisível: fora do Diário, nenhum número de caloria aparece.
+
+Os registros ficam só no dispositivo (localStorage, chave por pessoa e data, descarte após 7 dias). Não há sincronização entre aparelhos nem histórico na interface.
 
 ## Alimento contado em unidades
 

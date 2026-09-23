@@ -9,11 +9,19 @@ import type {
 } from "../domain/types.ts";
 import { CALCULATION_ERROR_MESSAGE, formatPortion } from "../format.ts";
 import { FoodSelector } from "./FoodSelector.tsx";
+import { useOptionalLog } from "./LogContext.tsx";
 import { MEAL_VISUALS } from "./MealVisuals.tsx";
 import { PortionResult } from "./PortionResult.tsx";
 
 export const NO_SECOND_CARBOHYDRATE_LABEL = "Sem segundo carboidrato";
 export const ADD_SECOND_CARBOHYDRATE_LABEL = "Adicionar segundo carboidrato";
+
+function resultSignature(result: PortionCalculationResult): string {
+  const items = result.secondCarbohydrate
+    ? [result.carbohydrate, result.secondCarbohydrate, result.protein]
+    : [result.carbohydrate, result.protein];
+  return `${result.mealKey}:${items.map((item) => `${item.foodId}:${item.grams}`).join("|")}`;
+}
 
 type StepState = "done" | "current" | "pending";
 
@@ -131,6 +139,8 @@ export function MealBuilderScreen({
     secondOptions.find((food) => food.id === secondCarbohydrateId) ?? null;
   const [secondRequested, setSecondRequested] = useState(false);
   const secondOpen = secondRequested || secondCarbohydrate !== null;
+  const log = useOptionalLog();
+  const [loggedSignature, setLoggedSignature] = useState<string | null>(null);
   const outcome = useMemo(() => {
     if (!carbohydrate || !protein) return { kind: "incomplete" as const };
     try {
@@ -269,6 +279,31 @@ export function MealBuilderScreen({
             secondCarbohydrate={secondCarbohydrate}
             protein={protein}
           />
+        ) : null}
+        {outcome.kind === "result" && log ? (
+          <button
+            type="button"
+            disabled={loggedSignature === resultSignature(outcome.result)}
+            onClick={() => {
+              const result = outcome.result;
+              const items = result.secondCarbohydrate
+                ? [result.carbohydrate, result.secondCarbohydrate, result.protein]
+                : [result.carbohydrate, result.protein];
+              for (const item of items) {
+                log.addEntry({
+                  foodId: item.foodId,
+                  grams: item.grams,
+                  mealKey: result.mealKey,
+                });
+              }
+              setLoggedSignature(resultSignature(result));
+            }}
+            className="mt-3 inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-2xl border-2 border-guide-accent bg-transparent px-4 font-bold text-guide-accent transition-[background-color,color,border-color,transform] duration-150 hover:bg-guide-selected active:scale-[0.99] disabled:cursor-default disabled:border-guide-success disabled:text-guide-success"
+          >
+            {loggedSignature === resultSignature(outcome.result)
+              ? "Registrado no diário"
+              : "Registrar esta refeição"}
+          </button>
         ) : null}
       </div>
       <p className="m-0 text-sm text-guide-muted text-pretty">
