@@ -72,7 +72,7 @@ function StickySummary({ result }: { result: PortionCalculationResult }) {
       className="pointer-events-none fixed inset-x-0 bottom-0 z-10 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
       aria-hidden="true"
     >
-      <div className="mx-auto max-w-md rounded-3xl border border-guide-line bg-guide-card/95 px-4 py-3 shadow-[0_-10px_36px_rgb(31_26_23/0.14)] backdrop-blur-sm">
+      <div className="mx-auto max-w-md rounded-3xl border border-white/50 bg-guide-card/80 px-4 py-3 shadow-pop ring-1 ring-black/5 backdrop-blur-md">
         <div className="flex items-end justify-between gap-2">
           {items.map((item, index) => (
             <div key={item.foodId} className="flex min-w-0 items-end gap-2">
@@ -183,9 +183,13 @@ export function MealBuilderScreen({
     >
       <header className="grid gap-4">
         <div
-          className={`relative flex items-center gap-4 overflow-hidden rounded-3xl ${visual.surface} p-4`}
+          className={`relative flex items-center gap-3 overflow-hidden rounded-3xl ${visual.gradient} p-4 shadow-card`}
         >
-          <span className={`relative shrink-0 ${visual.ink}`}>{visual.icon}</span>
+          <span
+            className={`flex size-10 shrink-0 items-center justify-center rounded-full bg-white/60 backdrop-blur-sm ${visual.ink}`}
+          >
+            {visual.icon}
+          </span>
           <div className="relative min-w-0 flex-1">
             <h1 className="font-display m-0 text-2xl leading-tight text-pretty">
               {meal.label}
@@ -247,7 +251,7 @@ export function MealBuilderScreen({
       <div aria-live="polite">
         {outcome.kind === "error" ? (
           <p
-            className="m-0 rounded-3xl border border-guide-line bg-guide-card p-4"
+            className="m-0 rounded-3xl border border-guide-line bg-guide-card p-4 shadow-card"
             role="alert"
           >
             {CALCULATION_ERROR_MESSAGE}

@@ -31,9 +31,9 @@ function Tile({
 }) {
   return (
     <label
-      className={`relative flex cursor-pointer flex-col gap-1 rounded-2xl border-2 p-3 pr-10 transition-[border-color,background-color,transform] duration-150 active:scale-[0.985] ${
+      className={`relative flex cursor-pointer flex-col gap-1 rounded-2xl border-2 p-3 pr-10 transition-[border-color,background-color,box-shadow,transform] duration-150 active:scale-[0.985] ${
         selected
-          ? "border-guide-accent bg-guide-selected"
+          ? "border-guide-accent bg-guide-selected shadow-card"
           : "border-guide-line bg-guide-card hover:border-guide-accent/50"
       } ${className}`}
     >
@@ -41,7 +41,7 @@ function Tile({
       <span
         className={`pointer-events-none absolute top-3 right-3 flex size-5 items-center justify-center rounded-full border-2 transition-[background-color,border-color] duration-150 ${
           selected
-            ? "border-guide-accent bg-guide-accent text-white"
+            ? "animate-pop border-guide-accent bg-guide-accent text-white"
             : "border-guide-line bg-guide-card text-transparent"
         }`}
         aria-hidden="true"

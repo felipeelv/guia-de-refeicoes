@@ -5,6 +5,7 @@ export interface MealVisual {
   descriptor: string;
   image: string;
   surface: string;
+  gradient: string;
   ink: string;
   icon: ReactNode;
 }
@@ -66,6 +67,7 @@ export const MEAL_VISUALS: Record<MealKey, MealVisual> = {
     descriptor: "Comece o dia",
     image: "/refeicoes/cafe-da-manha.jpg",
     surface: "bg-meal-breakfast",
+    gradient: "bg-meal-breakfast-grad",
     ink: "text-meal-breakfast-ink",
     icon: <SunIcon />,
   },
@@ -73,6 +75,7 @@ export const MEAL_VISUALS: Record<MealKey, MealVisual> = {
     descriptor: "Mais energia",
     image: "/refeicoes/almoco.jpg",
     surface: "bg-meal-lunch",
+    gradient: "bg-meal-lunch-grad",
     ink: "text-meal-lunch-ink",
     icon: <CutleryIcon />,
   },
@@ -80,6 +83,7 @@ export const MEAL_VISUALS: Record<MealKey, MealVisual> = {
     descriptor: "Mantenha o foco",
     image: "/refeicoes/lanche.jpg",
     surface: "bg-meal-snack",
+    gradient: "bg-meal-snack-grad",
     ink: "text-meal-snack-ink",
     icon: <LeafIcon />,
   },
@@ -87,6 +91,7 @@ export const MEAL_VISUALS: Record<MealKey, MealVisual> = {
     descriptor: "Equilíbrio à noite",
     image: "/refeicoes/jantar.jpg",
     surface: "bg-meal-dinner",
+    gradient: "bg-meal-dinner-grad",
     ink: "text-meal-dinner-ink",
     icon: <PlateIcon />,
   },
@@ -94,6 +99,7 @@ export const MEAL_VISUALS: Record<MealKey, MealVisual> = {
     descriptor: "Uma escolha leve",
     image: "/refeicoes/ceia.jpg",
     surface: "bg-meal-supper",
+    gradient: "bg-meal-supper-grad",
     ink: "text-meal-supper-ink",
     icon: <MoonIcon />,
   },

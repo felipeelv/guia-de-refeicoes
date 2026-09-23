@@ -11,7 +11,7 @@ export function HomeScreen({ person }: { person: Person }) {
         <p className="m-0 text-xs font-bold tracking-[0.2em] text-guide-accent uppercase">
           Ficha de porções
         </p>
-        <h1 className="font-display m-0 text-4xl leading-tight text-pretty">
+        <h1 className="font-display m-0 text-5xl leading-tight text-pretty">
           Cardápio de {person.name}
         </h1>
         <p className="m-0 text-guide-muted text-pretty">

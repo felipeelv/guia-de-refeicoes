@@ -45,7 +45,7 @@ export function PersonBar({ person }: { person: Person }) {
     navigate(`/${key}${rest}${search}`, { replace: true });
   }
   return (
-    <div className="sticky top-0 z-20 border-b border-guide-line bg-guide-paper/92 backdrop-blur-sm">
+    <div className="sticky top-0 z-20 border-b border-white/50 bg-guide-paper/80 shadow-[0_1px_10px_rgb(31_26_23/0.05)] backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-md items-center justify-between gap-3 px-4 py-2.5">
         <Link
           to={`/${person.key}`}
