@@ -89,8 +89,9 @@ export function foodsByCategory(
   category: FoodCategory,
   meal: MealKey,
   excludedTags: readonly FoodTag[] = [],
+  source: readonly Food[] = foods,
 ): Food[] {
-  return foods.filter(
+  return source.filter(
     (food) =>
       food.category === category &&
       food.meals.includes(meal) &&

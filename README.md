@@ -1,6 +1,6 @@
 # Guia de montagem de refeições
 
-Consulta de porções para uma meta calórica fixa, com um cardápio por pessoa. O app roda só no navegador: não tem login, banco nem soma do dia. A caloria da refeição não muda. O alimento muda. A porção se adapta.
+Consulta de porções para uma meta calórica fixa, com um cardápio por pessoa. O app roda só no navegador: não tem login nem backend; o cardápio vem dos dados locais ou do Global Config. A caloria da refeição não muda. O alimento muda. A porção se adapta.
 
 As calorias existem só na configuração e no cálculo. A tela mostra apenas gramas e um aviso de margem, sem números de energia, para evitar o efeito psicológico de contar calorias.
 
@@ -30,9 +30,29 @@ O build sai em `dist`.
 1. Crie um repositório no GitHub e envie esta pasta como raiz (não como subpasta).
 2. Em [vercel.com/new](https://vercel.com/new), importe o repositório.
 3. Framework: Vite. Root Directory: vazio. Build: `pnpm build`. Output: `dist`.
-4. Não é necessário configurar variável de ambiente.
+4. Para servir o cardápio do banco (opcional), configure `VITE_GLOBAL_CONFIG_ITEMS` nas variáveis do projeto — ver abaixo. Sem ela, o app usa os dados locais de `src/catalog/`.
 
 O `vercel.json` já redireciona as rotas do SPA (`/:pessoa/refeicoes/:mealKey`) para `index.html`. URLs antigas sem pessoa (`/refeicoes/:mealKey`) caem na pessoa padrão.
+
+## Banco de dados (Vercel Global Config)
+
+O cardápio (alimentos, pessoas e refeições) pode ser servido de um [Global Config](https://vercel.com/docs/global-config) na Vercel, atualizável sem redeploy. No carregamento, o app lê os itens direto do navegador; se a leitura falhar, passar de 3 s ou o conteúdo for inválido, ele usa os dados locais de `src/catalog/` — o app nunca fica fora do ar por causa do store.
+
+### Configurar
+
+1. Copie `.env.example` para `.env.local` e preencha `VITE_GLOBAL_CONFIG_ITEMS` com a connection string do store acrescida de `/items`, e `GLOBAL_CONFIG_ID` com o id do store (`ecfg_...`).
+2. Na Vercel, adicione `VITE_GLOBAL_CONFIG_ITEMS` nas variáveis de ambiente do projeto (Settings → Environment Variables).
+3. Para escrever no store, crie um token em [vercel.com/account/tokens](https://vercel.com/account/tokens) e coloque em `VERCEL_API_TOKEN` no `.env.local`. Esse arquivo nunca é commitado (`.env.*` está no `.gitignore`).
+
+### Atualizar o cardápio
+
+Edite `src/catalog/foods.json`, `persons.ts` ou `meals.ts` e rode:
+
+```sh
+pnpm catalog:push
+```
+
+O script valida os dados com as mesmas regras do app e grava as chaves `foods`, `persons` e `meals` no store. O plano Hobby permite 250 escritas por mês.
 
 ## Pessoas e metas
 
