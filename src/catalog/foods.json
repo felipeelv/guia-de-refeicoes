@@ -3,12 +3,32 @@
     "id": "arroz-branco",
     "name": "Arroz branco",
     "category": "carbohydrate",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "cozido, sem óleo, sem sal",
     "caloriesPer100g": 131,
     "proteinPer100g": 2.38,
     "carbohydratePer100g": 30,
     "fatPer100g": 0.41,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 28.8,
+    "totalCarbohydratePer100g": 30.0,
+    "fiberPer100g": 1.2,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0018A",
@@ -22,12 +42,32 @@
     "id": "arroz-integral",
     "name": "Arroz integral",
     "category": "carbohydrate",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "cozido, sem óleo, sem sal",
     "caloriesPer100g": 108,
     "proteinPer100g": 2.44,
     "carbohydratePer100g": 23.5,
     "fatPer100g": 0.87,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 21.4,
+    "totalCarbohydratePer100g": 23.5,
+    "fiberPer100g": 2.13,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0016A",
@@ -41,12 +81,32 @@
     "id": "feijao-carioca",
     "name": "Feijão carioca",
     "category": "carbohydrate",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "cozido com caldo, sem óleo, sem sal",
     "caloriesPer100g": 71,
     "proteinPer100g": 4.77,
     "carbohydratePer100g": 15.3,
     "fatPer100g": 0.54,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 8.2,
+    "totalCarbohydratePer100g": 15.3,
+    "fiberPer100g": 7.06,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0001T",
@@ -60,12 +120,32 @@
     "id": "feijao-preto",
     "name": "Feijão preto",
     "category": "carbohydrate",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "cozido com caldo, sem óleo, sem sal",
     "caloriesPer100g": 62,
     "proteinPer100g": 4.48,
     "carbohydratePer100g": 14,
     "fatPer100g": 0.54,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 5.6,
+    "totalCarbohydratePer100g": 14.0,
+    "fiberPer100g": 8.4,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0008T",
@@ -79,12 +159,32 @@
     "id": "batata-inglesa",
     "name": "Batata inglesa",
     "category": "carbohydrate",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "cozida, sem casca, drenada, sem óleo, sem sal",
     "caloriesPer100g": 52,
     "proteinPer100g": 1.33,
     "carbohydratePer100g": 12.3,
     "fatPer100g": 0.05,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 10.8,
+    "totalCarbohydratePer100g": 12.3,
+    "fiberPer100g": 1.47,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0041B",
@@ -98,12 +198,32 @@
     "id": "batata-doce",
     "name": "Batata-doce",
     "category": "carbohydrate",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "assada, sem casca, sem óleo, sem sal",
     "caloriesPer100g": 145,
     "proteinPer100g": 2.19,
     "carbohydratePer100g": 35.3,
     "fatPer100g": 0.28,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 31.4,
+    "totalCarbohydratePer100g": 35.3,
+    "fiberPer100g": 3.9,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0302B",
@@ -117,12 +237,32 @@
     "id": "mandioca",
     "name": "Mandioca",
     "category": "carbohydrate",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "cozida, sem casca, drenada, sem óleo, com sal",
     "caloriesPer100g": 120,
     "proteinPer100g": 0.64,
     "carbohydratePer100g": 29.7,
     "fatPer100g": 0.24,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 27.9,
+    "totalCarbohydratePer100g": 29.7,
+    "fiberPer100g": 1.77,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0908B",
@@ -136,12 +276,32 @@
     "id": "macarrao",
     "name": "Macarrão",
     "category": "carbohydrate",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "cozido, sem óleo, sem sal",
     "caloriesPer100g": 161,
     "proteinPer100g": 4.57,
     "carbohydratePer100g": 34.7,
     "fatPer100g": 0.74,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 33.5,
+    "totalCarbohydratePer100g": 34.7,
+    "fiberPer100g": 1.17,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "present",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRD0006A",
@@ -155,7 +315,9 @@
     "id": "pao-frances",
     "name": "Pão francês",
     "category": "carbohydrate",
-    "meals": ["breakfast"],
+    "meals": [
+      "breakfast"
+    ],
     "preparation": "de padaria, com farinha de trigo refinada",
     "unit": {
       "singular": "pão",
@@ -167,6 +329,23 @@
     "proteinPer100g": 9.83,
     "carbohydratePer100g": 61.6,
     "fatPer100g": 2.12,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 59.0,
+    "totalCarbohydratePer100g": 61.6,
+    "fiberPer100g": 2.61,
+    "portionBounds": {
+      "minimum": 0.5,
+      "maximum": 2,
+      "step": 0.5
+    },
+    "restrictions": {
+      "gluten": "present",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0002A",
@@ -180,12 +359,33 @@
     "id": "aveia",
     "name": "Aveia",
     "category": "carbohydrate",
-    "meals": ["breakfast", "snack", "supper"],
+    "meals": [
+      "breakfast",
+      "snack",
+      "supper"
+    ],
     "preparation": "em flocos",
     "caloriesPer100g": 379,
     "proteinPer100g": 15.6,
     "carbohydratePer100g": 64.5,
     "fatPer100g": 8.6,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 55.0,
+    "totalCarbohydratePer100g": 64.5,
+    "fiberPer100g": 9.5,
+    "portionBounds": {
+      "minimum": 10,
+      "maximum": 100,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0024A",
@@ -199,12 +399,33 @@
     "id": "tapioca",
     "name": "Tapioca",
     "category": "carbohydrate",
-    "meals": ["breakfast", "snack", "supper"],
+    "meals": [
+      "breakfast",
+      "snack",
+      "supper"
+    ],
     "preparation": "na frigideira, sem manteiga, sem recheio",
     "caloriesPer100g": 289,
     "proteinPer100g": 0.36,
     "carbohydratePer100g": 71.9,
     "fatPer100g": 0,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 71.7,
+    "totalCarbohydratePer100g": 71.9,
+    "fiberPer100g": 0.2,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0906B",
@@ -218,13 +439,36 @@
     "id": "banana",
     "name": "Banana",
     "category": "carbohydrate",
-    "meals": ["breakfast", "snack", "supper"],
-    "tags": ["fruit"],
+    "meals": [
+      "breakfast",
+      "snack",
+      "supper"
+    ],
+    "tags": [
+      "fruit"
+    ],
     "preparation": "in natura",
     "caloriesPer100g": 109,
     "proteinPer100g": 1.27,
     "carbohydratePer100g": 26.7,
     "fatPer100g": 0.19,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 24.5,
+    "totalCarbohydratePer100g": 26.7,
+    "fiberPer100g": 2.24,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0006C",
@@ -238,13 +482,36 @@
     "id": "mamao",
     "name": "Mamão",
     "category": "carbohydrate",
-    "meals": ["breakfast", "snack", "supper"],
-    "tags": ["fruit"],
+    "meals": [
+      "breakfast",
+      "snack",
+      "supper"
+    ],
+    "tags": [
+      "fruit"
+    ],
     "preparation": "polpa, in natura",
     "caloriesPer100g": 44,
     "proteinPer100g": 0.57,
     "carbohydratePer100g": 10.7,
     "fatPer100g": 0.25,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 8.89,
+    "totalCarbohydratePer100g": 10.7,
+    "fiberPer100g": 1.83,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0024C",
@@ -258,13 +525,35 @@
     "id": "maca",
     "name": "Maçã",
     "category": "carbohydrate",
-    "meals": ["snack", "supper"],
-    "tags": ["fruit"],
+    "meals": [
+      "snack",
+      "supper"
+    ],
+    "tags": [
+      "fruit"
+    ],
     "preparation": "com casca, in natura",
     "caloriesPer100g": 59,
     "proteinPer100g": 0.29,
     "carbohydratePer100g": 15.2,
     "fatPer100g": null,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 13.8,
+    "totalCarbohydratePer100g": 15.2,
+    "fiberPer100g": 1.35,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 400,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0064C",
@@ -278,12 +567,32 @@
     "id": "peito-de-frango",
     "name": "Peito de frango",
     "category": "protein",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "grelhado, sem pele, sem óleo, sem sal",
     "caloriesPer100g": 150,
     "proteinPer100g": 32.1,
     "carbohydratePer100g": 0,
     "fatPer100g": 2.45,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 0.0,
+    "totalCarbohydratePer100g": 0.0,
+    "fiberPer100g": 0.0,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0114F",
@@ -297,12 +606,32 @@
     "id": "patinho",
     "name": "Patinho",
     "category": "protein",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "grelhado, sem gordura, sem óleo, sem sal",
     "caloriesPer100g": 211,
     "proteinPer100g": 36,
     "carbohydratePer100g": 0,
     "fatPer100g": 7.5,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 0.0,
+    "totalCarbohydratePer100g": 0.0,
+    "fiberPer100g": 0.0,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0045F",
@@ -316,12 +645,32 @@
     "id": "coxao-mole",
     "name": "Coxão mole",
     "category": "protein",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "cozido, sem gordura, sem óleo, sem sal",
     "caloriesPer100g": 209,
     "proteinPer100g": 32.2,
     "carbohydratePer100g": 0,
     "fatPer100g": 8.91,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 0.0,
+    "totalCarbohydratePer100g": 0.0,
+    "fiberPer100g": 0.0,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0034F",
@@ -335,12 +684,32 @@
     "id": "file-mignon",
     "name": "Filé-mignon",
     "category": "protein",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "grelhado, sem gordura, sem óleo, sem sal",
     "caloriesPer100g": 211,
     "proteinPer100g": 32.9,
     "carbohydratePer100g": 0,
     "fatPer100g": 8.83,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 0.0,
+    "totalCarbohydratePer100g": 0.0,
+    "fiberPer100g": 0.0,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0036F",
@@ -354,12 +723,32 @@
     "id": "lombo-suino",
     "name": "Lombo suíno",
     "category": "protein",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "assado, sem óleo, sem sal",
     "caloriesPer100g": 200,
     "proteinPer100g": 35.7,
     "carbohydratePer100g": 0,
     "fatPer100g": 6.4,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 0.0,
+    "totalCarbohydratePer100g": 0.0,
+    "fiberPer100g": 0.0,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0163F",
@@ -373,12 +762,32 @@
     "id": "tilapia",
     "name": "Tilápia",
     "category": "protein",
-    "meals": ["lunch", "dinner"],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
     "preparation": "grelhada, sem pele, sem óleo, sem sal",
     "caloriesPer100g": 90,
     "proteinPer100g": 18.5,
     "carbohydratePer100g": 0,
     "fatPer100g": 1.73,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 0.0,
+    "totalCarbohydratePer100g": 0.0,
+    "fiberPer100g": 0.0,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "present",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0486E",
@@ -392,7 +801,12 @@
     "id": "ovo",
     "name": "Ovo",
     "category": "protein",
-    "meals": ["breakfast", "lunch", "snack", "dinner"],
+    "meals": [
+      "breakfast",
+      "lunch",
+      "snack",
+      "dinner"
+    ],
     "preparation": "cozido, sem sal",
     "unit": {
       "singular": "ovo",
@@ -404,6 +818,23 @@
     "proteinPer100g": 10.4,
     "carbohydratePer100g": 1.38,
     "fatPer100g": 8.7,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 1.38,
+    "totalCarbohydratePer100g": 1.38,
+    "fiberPer100g": 0.0,
+    "portionBounds": {
+      "minimum": 0.5,
+      "maximum": 4,
+      "step": 0.5
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "present",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0010J",
@@ -417,12 +848,33 @@
     "id": "iogurte-natural",
     "name": "Iogurte natural",
     "category": "protein",
-    "meals": ["breakfast", "snack", "supper"],
+    "meals": [
+      "breakfast",
+      "snack",
+      "supper"
+    ],
     "preparation": "integral, sem açúcar",
     "caloriesPer100g": 57,
     "proteinPer100g": 4.02,
     "carbohydratePer100g": 4.76,
     "fatPer100g": 2.43,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 4.76,
+    "totalCarbohydratePer100g": 4.76,
+    "fiberPer100g": 0.0,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "present",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0020G",
@@ -436,12 +888,32 @@
     "id": "leite-integral",
     "name": "Leite integral",
     "category": "protein",
-    "meals": ["breakfast", "supper"],
+    "meals": [
+      "breakfast",
+      "supper"
+    ],
     "preparation": "UHT, sem açúcar",
     "caloriesPer100g": 65,
     "proteinPer100g": 2.35,
     "carbohydratePer100g": 7.16,
     "fatPer100g": 3.04,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 7.16,
+    "totalCarbohydratePer100g": 7.16,
+    "fiberPer100g": 0.0,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "present",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0044G",
@@ -455,12 +927,32 @@
     "id": "queijo-minas-frescal",
     "name": "Queijo minas frescal",
     "category": "protein",
-    "meals": ["breakfast", "snack"],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
     "preparation": "sem tempero",
     "caloriesPer100g": 243,
     "proteinPer100g": 15.9,
     "carbohydratePer100g": 3.02,
     "fatPer100g": 18.6,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 3.02,
+    "totalCarbohydratePer100g": 3.02,
+    "fiberPer100g": 0.0,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "present",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0052G",
@@ -474,12 +966,32 @@
     "id": "ricota",
     "name": "Ricota",
     "category": "protein",
-    "meals": ["snack", "supper"],
+    "meals": [
+      "snack",
+      "supper"
+    ],
     "preparation": "fresca, sem tempero",
     "caloriesPer100g": 139,
     "proteinPer100g": 12.6,
     "carbohydratePer100g": 3.79,
     "fatPer100g": 8.11,
+    "carbohydrateBasis": "available",
+    "availableCarbohydratePer100g": 3.79,
+    "totalCarbohydratePer100g": 3.79,
+    "fiberPer100g": null,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "present",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "unknown"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0051G",
@@ -493,12 +1005,31 @@
     "id": "castanha-de-caju",
     "name": "Castanha de caju",
     "category": "protein",
-    "meals": ["snack"],
+    "meals": [
+      "snack"
+    ],
     "preparation": "sem torrar, sem sal",
     "caloriesPer100g": 582,
     "proteinPer100g": 18.2,
     "carbohydratePer100g": 30.2,
     "fatPer100g": 43.9,
+    "carbohydrateBasis": "total_including_fiber",
+    "availableCarbohydratePer100g": 26.9,
+    "totalCarbohydratePer100g": 30.2,
+    "fiberPer100g": 3.3,
+    "portionBounds": {
+      "minimum": 20,
+      "maximum": 300,
+      "step": null
+    },
+    "restrictions": {
+      "gluten": "unknown",
+      "milk": "unknown",
+      "lactose": "unknown",
+      "egg": "unknown",
+      "fish": "unknown",
+      "tree_nut": "present"
+    },
     "source": {
       "name": "TBCA",
       "code": "BRC0012U",

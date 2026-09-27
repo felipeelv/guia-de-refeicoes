@@ -1,10 +1,23 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { catalogIssue, foodsByCategory, loadCatalog } from "../src/catalog/catalog.ts";
+import {
+  catalogIssue,
+  energyReviewPending,
+  expectedPortionBounds,
+  foodsByCategory,
+  foodsForMacroOptimization,
+  isCompatibleWithRestriction,
+  isMacroOptimizationEnabled,
+  loadCatalog,
+  macroOptimizationIssue,
+  portionDomain,
+  restrictionKnowledge,
+} from "../src/catalog/catalog.ts";
 import rawFoods from "../src/catalog/foods.json" with { type: "json" };
 import { MEALS, mealsInOrder } from "../src/catalog/meals.ts";
 import { DEFAULT_PERSON, PERSONS, personByKey } from "../src/catalog/persons.ts";
 import type { Food } from "../src/domain/types.ts";
+import { SUPPORTED_RESTRICTIONS } from "../src/domain/types.ts";
 import {
   PortionCalculationError,
   mealConfigError,
@@ -253,5 +266,297 @@ test("metas fixas e invariantes das cinco refeições", () => {
       if (error) throw new PortionCalculationError(error);
     },
     PortionCalculationError,
+  );
+});
+
+const CARBOHYDRATE_AUDIT: Record<
+  string,
+  {
+    basis: "available" | "total_including_fiber";
+    total: number;
+    available: number;
+    fiber: number | null;
+  }
+> = {
+  "arroz-branco": { basis: "total_including_fiber", total: 30, available: 28.8, fiber: 1.2 },
+  "arroz-integral": { basis: "total_including_fiber", total: 23.5, available: 21.4, fiber: 2.13 },
+  "feijao-carioca": { basis: "total_including_fiber", total: 15.3, available: 8.2, fiber: 7.06 },
+  "feijao-preto": { basis: "total_including_fiber", total: 14, available: 5.6, fiber: 8.4 },
+  "batata-inglesa": { basis: "total_including_fiber", total: 12.3, available: 10.8, fiber: 1.47 },
+  "batata-doce": { basis: "total_including_fiber", total: 35.3, available: 31.4, fiber: 3.9 },
+  mandioca: { basis: "total_including_fiber", total: 29.7, available: 27.9, fiber: 1.77 },
+  macarrao: { basis: "total_including_fiber", total: 34.7, available: 33.5, fiber: 1.17 },
+  "pao-frances": { basis: "total_including_fiber", total: 61.6, available: 59, fiber: 2.61 },
+  aveia: { basis: "total_including_fiber", total: 64.5, available: 55, fiber: 9.5 },
+  tapioca: { basis: "total_including_fiber", total: 71.9, available: 71.7, fiber: 0.2 },
+  banana: { basis: "total_including_fiber", total: 26.7, available: 24.5, fiber: 2.24 },
+  mamao: { basis: "total_including_fiber", total: 10.7, available: 8.89, fiber: 1.83 },
+  maca: { basis: "total_including_fiber", total: 15.2, available: 13.8, fiber: 1.35 },
+  "peito-de-frango": { basis: "available", total: 0, available: 0, fiber: 0 },
+  patinho: { basis: "available", total: 0, available: 0, fiber: 0 },
+  "coxao-mole": { basis: "available", total: 0, available: 0, fiber: 0 },
+  "file-mignon": { basis: "available", total: 0, available: 0, fiber: 0 },
+  "lombo-suino": { basis: "available", total: 0, available: 0, fiber: 0 },
+  tilapia: { basis: "available", total: 0, available: 0, fiber: 0 },
+  ovo: { basis: "available", total: 1.38, available: 1.38, fiber: 0 },
+  "iogurte-natural": { basis: "available", total: 4.76, available: 4.76, fiber: 0 },
+  "leite-integral": { basis: "available", total: 7.16, available: 7.16, fiber: 0 },
+  "queijo-minas-frescal": { basis: "available", total: 3.02, available: 3.02, fiber: 0 },
+  ricota: { basis: "available", total: 3.79, available: 3.79, fiber: null },
+  "castanha-de-caju": { basis: "total_including_fiber", total: 30.2, available: 26.9, fiber: 3.3 },
+};
+
+test("auditoria não troca macros já gravados nem trata total como disponível", () => {
+  assert.deepEqual(
+    foods.filter((food) => food.fatPer100g === null).map((food) => food.id),
+    ["maca"],
+  );
+  for (const food of foods) {
+    const audit = CARBOHYDRATE_AUDIT[food.id];
+    assert.ok(audit, food.id);
+    assert.equal(food.carbohydrateBasis, audit.basis);
+    assert.equal(food.carbohydratePer100g, audit.total);
+    assert.equal(food.totalCarbohydratePer100g, audit.total);
+    assert.equal(food.availableCarbohydratePer100g, audit.available);
+    assert.equal(food.fiberPer100g, audit.fiber);
+    if (audit.basis === "available") {
+      assert.equal(food.carbohydratePer100g, audit.available);
+    } else {
+      assert.notEqual(food.carbohydratePer100g, audit.available);
+      assert.equal(macroOptimizationIssue(food, 10)?.includes("não normalizada"), true);
+    }
+  }
+  const apple = foods.find((food) => food.id === "maca");
+  const rice = foods.find((food) => food.id === "arroz-branco");
+  const ricotta = foods.find((food) => food.id === "ricota");
+  const tapioca = foods.find((food) => food.id === "tapioca");
+  assert.ok(apple && rice && ricotta && tapioca);
+  assert.equal(apple.fatPer100g, null);
+  assert.equal(apple.caloriesPer100g, 59);
+  assert.equal(apple.proteinPer100g, 0.29);
+  assert.equal(apple.carbohydratePer100g, 15.2);
+  assert.equal(ricotta.fiberPer100g, null);
+  assert.equal(tapioca.fatPer100g, 0);
+  assert.equal(catalogIssue(apple), null);
+  assert.equal(isMacroOptimizationEnabled(apple, 10), false);
+  assert.match(macroOptimizationIssue(apple, 10) ?? "", /gordura/);
+  assert.match(macroOptimizationIssue(apple, 10) ?? "", /não normalizada/);
+  assert.equal(energyReviewPending(apple), null);
+  assert.match(macroOptimizationIssue(rice, 10) ?? "", /não normalizada/);
+  assert.equal(macroOptimizationIssue(rice, 10)?.includes("gordura"), false);
+  assert.equal(isMacroOptimizationEnabled(ricotta, 10), true);
+});
+
+test("otimização de macros usa uma regra só e deixa o legado ativo", () => {
+  const enabled = foodsForMacroOptimization(foods, 10).map((food) => food.id);
+  assert.deepEqual(
+    enabled,
+    foods
+      .filter((food) => macroOptimizationIssue(food, 10) === null)
+      .map((food) => food.id),
+  );
+  assert.deepEqual(enabled, [
+    "peito-de-frango",
+    "patinho",
+    "coxao-mole",
+    "file-mignon",
+    "lombo-suino",
+    "tilapia",
+    "ovo",
+    "iogurte-natural",
+    "leite-integral",
+    "queijo-minas-frescal",
+    "ricota",
+  ]);
+  for (const increment of [5, 10]) {
+    assert.deepEqual(
+      foodsForMacroOptimization(foods, increment).map((food) => food.id),
+      foods
+        .filter((food) => isMacroOptimizationEnabled(food, increment))
+        .map((food) => food.id),
+    );
+  }
+  assert.equal(foods.some((food) => food.id === "maca"), true);
+  assert.equal(foods.some((food) => food.id === "aveia"), true);
+  const beans = foods.find((food) => food.id === "feijao-carioca");
+  const chicken = foods.find((food) => food.id === "peito-de-frango");
+  assert.ok(beans && chicken);
+  assert.match(energyReviewPending(beans) ?? "", /revisão energética/);
+  assert.equal(beans.caloriesPer100g, 71);
+  assert.equal(energyReviewPending(chicken), null);
+  assert.equal(macroOptimizationIssue(beans, 10)?.includes("revisão"), false);
+  const egg = foods.find((food) => food.id === "ovo");
+  assert.ok(egg);
+  const withoutBasis = { ...egg };
+  delete withoutBasis.carbohydrateBasis;
+  assert.match(macroOptimizationIssue(withoutBasis, 10) ?? "", /não normalizada/);
+  assert.match(
+    macroOptimizationIssue({ ...egg, carbohydrateBasis: "unspecified" }, 10) ?? "",
+    /não normalizada/,
+  );
+  assert.match(
+    macroOptimizationIssue(
+      { ...egg, portionBounds: { minimum: 1, maximum: 4, step: 0.5 } },
+      10,
+    ) ?? "",
+    /divergentes/,
+  );
+});
+
+test("limites de porção fecham no passo e domínio vazio não derruba o catálogo", () => {
+  const bread = foods.find((food) => food.id === "pao-frances");
+  const egg = foods.find((food) => food.id === "ovo");
+  const oats = foods.find((food) => food.id === "aveia");
+  const rice = foods.find((food) => food.id === "arroz-branco");
+  const chicken = foods.find((food) => food.id === "peito-de-frango");
+  assert.ok(bread && egg && oats && rice && chicken);
+  for (const food of foods) {
+    assert.deepEqual(food.portionBounds, expectedPortionBounds(food));
+  }
+  assert.deepEqual(portionDomain(bread, 10), {
+    ok: true,
+    constraints: {
+      foodId: "pao-frances",
+      minimum: 0.5,
+      maximum: 2,
+      step: 0.5,
+      unit: bread.unit,
+    },
+  });
+  assert.deepEqual(portionDomain(bread, 5), portionDomain(bread, 10));
+  assert.deepEqual(portionDomain(egg, 10), {
+    ok: true,
+    constraints: {
+      foodId: "ovo",
+      minimum: 0.5,
+      maximum: 4,
+      step: 0.5,
+      unit: egg.unit,
+    },
+  });
+  assert.deepEqual(portionDomain(oats, 10), {
+    ok: true,
+    constraints: {
+      foodId: "aveia",
+      minimum: 10,
+      maximum: 100,
+      step: 10,
+      unit: null,
+    },
+  });
+  const oatsStep = portionDomain(oats, 5);
+  assert.equal(oatsStep.ok, true);
+  if (oatsStep.ok) assert.equal(oatsStep.constraints.step, 5);
+  assert.deepEqual(portionDomain(rice, 10), {
+    ok: true,
+    constraints: {
+      foodId: "arroz-branco",
+      minimum: 20,
+      maximum: 400,
+      step: 10,
+      unit: null,
+    },
+  });
+  assert.deepEqual(portionDomain(chicken, 5), {
+    ok: true,
+    constraints: {
+      foodId: "peito-de-frango",
+      minimum: 20,
+      maximum: 300,
+      step: 5,
+      unit: null,
+    },
+  });
+  const customUnit = {
+    ...egg,
+    id: "biscoito",
+    unit: {
+      singular: "biscoito",
+      plural: "biscoitos",
+      gramsPerUnit: 20,
+      stepUnits: 0.5,
+    },
+    portionBounds: { minimum: 0.6, maximum: 2.4, step: 0.5 },
+  };
+  assert.equal(expectedPortionBounds(customUnit), null);
+  assert.deepEqual(portionDomain(customUnit, 10), {
+    ok: true,
+    constraints: {
+      foodId: "biscoito",
+      minimum: 1,
+      maximum: 2,
+      step: 0.5,
+      unit: customUnit.unit,
+    },
+  });
+  const empty = {
+    ...customUnit,
+    portionBounds: { minimum: 0.2, maximum: 0.3, step: 0.5 },
+  };
+  assert.doesNotThrow(() => portionDomain(empty, 10));
+  const emptyDomain = portionDomain(empty, 10);
+  assert.equal(emptyDomain.ok, false);
+  if (!emptyDomain.ok) assert.match(emptyDomain.message, /Domínio de porção vazio/);
+  assert.match(macroOptimizationIssue(empty, 10) ?? "", /Domínio de porção vazio/);
+  assert.equal(macroOptimizationIssue(chicken, 10), null);
+  assert.match(macroOptimizationIssue(chicken, 400) ?? "", /Domínio de porção vazio/);
+  const withoutOwnBounds = { ...customUnit, portionBounds: undefined };
+  assert.match(
+    macroOptimizationIssue(withoutOwnBounds, 10) ?? "",
+    /Limites de porção próprios ausentes/,
+  );
+});
+
+test("restrição desconhecida não é compatível e tag ausente não prova ausência", () => {
+  const chicken = foods.find((food) => food.id === "peito-de-frango");
+  const milk = foods.find((food) => food.id === "leite-integral");
+  const bread = foods.find((food) => food.id === "pao-frances");
+  const egg = foods.find((food) => food.id === "ovo");
+  const fish = foods.find((food) => food.id === "tilapia");
+  const nuts = foods.find((food) => food.id === "castanha-de-caju");
+  const pasta = foods.find((food) => food.id === "macarrao");
+  assert.ok(chicken && milk && bread && egg && fish && nuts && pasta);
+  assert.equal(chicken.tags, undefined);
+  for (const restriction of SUPPORTED_RESTRICTIONS) {
+    assert.equal(restrictionKnowledge(chicken, restriction), "unknown");
+    assert.equal(isCompatibleWithRestriction(chicken, restriction), false);
+  }
+  const { restrictions, ...untagged } = chicken;
+  assert.ok(restrictions);
+  assert.equal(restrictions.milk, "unknown");
+  assert.equal(restrictionKnowledge(untagged, "milk"), "unknown");
+  assert.equal(isCompatibleWithRestriction(untagged, "milk"), false);
+  assert.equal(restrictionKnowledge(milk, "milk"), "present");
+  assert.equal(isCompatibleWithRestriction(milk, "milk"), false);
+  assert.equal(restrictionKnowledge(milk, "lactose"), "unknown");
+  assert.equal(restrictionKnowledge(bread, "gluten"), "present");
+  assert.equal(restrictionKnowledge(pasta, "gluten"), "present");
+  assert.equal(restrictionKnowledge(egg, "egg"), "present");
+  assert.equal(restrictionKnowledge(fish, "fish"), "present");
+  assert.equal(restrictionKnowledge(nuts, "tree_nut"), "present");
+  assert.deepEqual(
+    foodsByCategory("carbohydrate", "breakfast", [], foods, ["gluten"]).map(
+      (food) => food.id,
+    ),
+    [],
+  );
+  assert.deepEqual(
+    foodsByCategory("protein", "lunch", [], foods, ["milk"]).map((food) => food.id),
+    [],
+  );
+  const cleared = {
+    ...chicken,
+    restrictions: { ...chicken.restrictions, milk: "verified_absent" as const },
+  };
+  assert.equal(isCompatibleWithRestriction(cleared, "milk"), true);
+  assert.deepEqual(
+    foodsByCategory("protein", "lunch", [], [cleared, milk], ["milk"]).map(
+      (food) => food.id,
+    ),
+    ["peito-de-frango"],
+  );
+  assert.deepEqual(
+    foodsByCategory("protein", "lunch", [], foods).map((food) => food.id),
+    foodsByCategory("protein", "lunch").map((food) => food.id),
   );
 });
