@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   catalogIssue,
+  carbohydrateForMacroOptimization,
   energyReviewPending,
   expectedPortionBounds,
   foodsByCategory,
@@ -321,9 +322,10 @@ test("auditoria não troca macros já gravados nem trata total como disponível"
     assert.equal(food.fiberPer100g, audit.fiber);
     if (audit.basis === "available") {
       assert.equal(food.carbohydratePer100g, audit.available);
+      assert.equal(carbohydrateForMacroOptimization(food), food.carbohydratePer100g);
     } else {
       assert.notEqual(food.carbohydratePer100g, audit.available);
-      assert.equal(macroOptimizationIssue(food, 10)?.includes("não normalizada"), true);
+      assert.equal(carbohydrateForMacroOptimization(food), audit.available);
     }
   }
   const apple = foods.find((food) => food.id === "maca");
@@ -338,13 +340,23 @@ test("auditoria não troca macros já gravados nem trata total como disponível"
   assert.equal(ricotta.fiberPer100g, null);
   assert.equal(tapioca.fatPer100g, 0);
   assert.equal(catalogIssue(apple), null);
+  assert.equal(carbohydrateForMacroOptimization(apple), 13.8);
   assert.equal(isMacroOptimizationEnabled(apple, 10), false);
   assert.match(macroOptimizationIssue(apple, 10) ?? "", /gordura/);
-  assert.match(macroOptimizationIssue(apple, 10) ?? "", /não normalizada/);
+  assert.equal(macroOptimizationIssue(apple, 10)?.includes("não normalizada"), false);
   assert.equal(energyReviewPending(apple), null);
-  assert.match(macroOptimizationIssue(rice, 10) ?? "", /não normalizada/);
-  assert.equal(macroOptimizationIssue(rice, 10)?.includes("gordura"), false);
+  assert.equal(carbohydrateForMacroOptimization(rice), 28.8);
+  assert.equal(rice.carbohydratePer100g, 30);
+  assert.equal(rice.caloriesPer100g, 131);
+  assert.equal(macroOptimizationIssue(rice, 10), null);
   assert.equal(isMacroOptimizationEnabled(ricotta, 10), true);
+  const riceWithoutAvailable = { ...rice, availableCarbohydratePer100g: null };
+  assert.equal(riceWithoutAvailable.carbohydratePer100g, 30);
+  assert.equal(carbohydrateForMacroOptimization(riceWithoutAvailable), null);
+  assert.match(
+    macroOptimizationIssue(riceWithoutAvailable, 10) ?? "",
+    /não normalizada/,
+  );
 });
 
 test("otimização de macros usa uma regra só e deixa o legado ativo", () => {
@@ -355,19 +367,17 @@ test("otimização de macros usa uma regra só e deixa o legado ativo", () => {
       .filter((food) => macroOptimizationIssue(food, 10) === null)
       .map((food) => food.id),
   );
-  assert.deepEqual(enabled, [
-    "peito-de-frango",
-    "patinho",
-    "coxao-mole",
-    "file-mignon",
-    "lombo-suino",
-    "tilapia",
-    "ovo",
-    "iogurte-natural",
-    "leite-integral",
-    "queijo-minas-frescal",
-    "ricota",
-  ]);
+  assert.equal(enabled.length, 25);
+  assert.deepEqual(
+    enabled,
+    foods.filter((food) => food.id !== "maca").map((food) => food.id),
+  );
+  assert.deepEqual(
+    foods
+      .filter((food) => !isMacroOptimizationEnabled(food, 10))
+      .map((food) => food.id),
+    ["maca"],
+  );
   for (const increment of [5, 10]) {
     assert.deepEqual(
       foodsForMacroOptimization(foods, increment).map((food) => food.id),
@@ -383,15 +393,50 @@ test("otimização de macros usa uma regra só e deixa o legado ativo", () => {
   assert.ok(beans && chicken);
   assert.match(energyReviewPending(beans) ?? "", /revisão energética/);
   assert.equal(beans.caloriesPer100g, 71);
+  assert.equal(carbohydrateForMacroOptimization(beans), 8.2);
   assert.equal(energyReviewPending(chicken), null);
-  assert.equal(macroOptimizationIssue(beans, 10)?.includes("revisão"), false);
+  assert.equal(macroOptimizationIssue(beans, 10), null);
+  const screening = {
+    ...beans,
+    id: "triagem",
+    carbohydrateBasis: "total_including_fiber" as const,
+    carbohydratePer100g: 50,
+    availableCarbohydratePer100g: 25,
+    proteinPer100g: 0,
+    fatPer100g: 0,
+    caloriesPer100g: 100,
+  };
+  assert.equal(carbohydrateForMacroOptimization(screening), 25);
+  assert.equal(energyReviewPending(screening), null);
+  assert.equal(screening.carbohydratePer100g, 50);
+  assert.equal(screening.caloriesPer100g, 100);
+  assert.match(
+    energyReviewPending({ ...screening, availableCarbohydratePer100g: 40 }) ?? "",
+    /revisão energética/,
+  );
   const egg = foods.find((food) => food.id === "ovo");
   assert.ok(egg);
-  const withoutBasis = { ...egg };
-  delete withoutBasis.carbohydrateBasis;
-  assert.match(macroOptimizationIssue(withoutBasis, 10) ?? "", /não normalizada/);
+  assert.equal(
+    carbohydrateForMacroOptimization({ ...egg, availableCarbohydratePer100g: 99 }),
+    egg.carbohydratePer100g,
+  );
+  assert.equal(
+    carbohydrateForMacroOptimization({
+      ...egg,
+      carbohydratePer100g: null,
+      availableCarbohydratePer100g: 1.38,
+    }),
+    null,
+  );
   assert.match(
-    macroOptimizationIssue({ ...egg, carbohydrateBasis: "unspecified" }, 10) ?? "",
+    macroOptimizationIssue(
+      {
+        ...egg,
+        carbohydrateBasis: "unspecified",
+        availableCarbohydratePer100g: null,
+      },
+      10,
+    ) ?? "",
     /não normalizada/,
   );
   assert.match(

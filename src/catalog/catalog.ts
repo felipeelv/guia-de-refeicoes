@@ -222,9 +222,24 @@ function knownNutrient(value: number | null | undefined): value is number {
 }
 
 /**
+ * Carboidrato que o solver de macros usa.
+ * Com base available, é carbohydratePer100g. Nos demais casos, é
+ * availableCarbohydratePer100g quando esse número é finito.
+ * Não lê o total no lugar do disponível e não altera o campo antigo.
+ */
+export function carbohydrateForMacroOptimization(food: Food): number | null {
+  if (food.carbohydrateBasis === "available") {
+    return knownNutrient(food.carbohydratePer100g) ? food.carbohydratePer100g : null;
+  }
+  return knownNutrient(food.availableCarbohydratePer100g)
+    ? food.availableCarbohydratePer100g
+    : null;
+}
+
+/**
  * Única regra de elegibilidade para o solver de macros.
  * O montador calórico continua com o catálogo legado.
- * Carboidrato disponível gravado à parte não normaliza o campo antigo.
+ * O campo antigo permanece como foi gravado; o solver usa o disponível.
  */
 export function macroOptimizationIssue(
   food: Food,
@@ -233,7 +248,6 @@ export function macroOptimizationIssue(
   const reasons: string[] = [];
   const missing: string[] = [];
   if (!knownNutrient(food.proteinPer100g)) missing.push("proteína");
-  if (!knownNutrient(food.carbohydratePer100g)) missing.push("carboidrato");
   if (!knownNutrient(food.fatPer100g)) missing.push("gordura");
   if (!Number.isFinite(food.caloriesPer100g) || food.caloriesPer100g <= 0) {
     missing.push("calorias");
@@ -241,7 +255,7 @@ export function macroOptimizationIssue(
   if (missing.length > 0) {
     reasons.push(`Nutriente desconhecido em ${food.id}: ${missing.join(", ")}.`);
   }
-  if (food.carbohydrateBasis !== "available") {
+  if (carbohydrateForMacroOptimization(food) === null) {
     reasons.push(`Base do carboidrato não normalizada em ${food.id}.`);
   }
   const expected = expectedPortionBounds(food);
@@ -308,14 +322,15 @@ export function isCompatibleWithRestrictions(
 }
 
 /**
- * Compara a energia cadastrada com 4/4/9 sobre os números já gravados.
+ * Compara a energia cadastrada com 4/4/9 usando o carboidrato do solver.
  * Não troca carbohydratePer100g pelo disponível e não altera caloriesPer100g.
  * Sem macro finito, não há triagem e o desconhecido não vira zero.
  */
 export function energyReviewPending(food: Food): string | null {
+  const carbohydrate = carbohydrateForMacroOptimization(food);
   if (
     !knownNutrient(food.proteinPer100g) ||
-    !knownNutrient(food.carbohydratePer100g) ||
+    carbohydrate === null ||
     !knownNutrient(food.fatPer100g) ||
     !Number.isFinite(food.caloriesPer100g) ||
     food.caloriesPer100g <= 0
@@ -324,7 +339,7 @@ export function energyReviewPending(food: Food): string | null {
   }
   const estimated =
     KCAL_PER_GRAM.protein * food.proteinPer100g +
-    KCAL_PER_GRAM.carbohydrate * food.carbohydratePer100g +
+    KCAL_PER_GRAM.carbohydrate * carbohydrate +
     KCAL_PER_GRAM.fat * food.fatPer100g;
   const delta = Math.abs(food.caloriesPer100g - estimated);
   if (delta > food.caloriesPer100g * ENERGY_REVIEW_RATIO) {
