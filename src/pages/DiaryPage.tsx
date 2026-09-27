@@ -28,24 +28,24 @@ export function DiaryPage() {
   });
 
   return (
-    <main className="mx-auto grid w-full max-w-md content-start gap-6 px-4 py-6 pb-[max(2rem,env(safe-area-inset-bottom))]">
-      <header className="grid gap-2">
-        <p className="m-0 text-xs font-bold tracking-[0.2em] text-guide-accent uppercase">
+    <main className="mx-auto grid w-full max-w-md content-start gap-6 px-5 pt-2 pb-[calc(7rem+env(safe-area-inset-bottom))]">
+      <header className="grid gap-1">
+        <p className="m-0 text-sm font-medium text-guide-accent-ink">
           Registro do dia
         </p>
-        <h1 className="font-display m-0 text-4xl leading-tight text-pretty">
+        <h1 className="font-display m-0 text-[28px] leading-[1.3] text-pretty">
           Diário de {person.name}
         </h1>
-        <p className="m-0 text-guide-muted first-letter:uppercase">{today}</p>
+        <p className="m-0 text-sm text-guide-muted first-letter:uppercase">{today}</p>
       </header>
 
-      <section className="grid gap-3 rounded-3xl border border-guide-line bg-guide-card p-4 shadow-card">
+      <section className="grid gap-3 rounded-card bg-guide-card p-5 shadow-card">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <p className="m-0 text-xs font-bold tracking-[0.16em] text-guide-muted uppercase">
+            <p className="m-0 text-sm text-guide-muted">
               Consumido hoje
             </p>
-            <p className="m-0 font-display text-4xl leading-none tabular-nums">
+            <p className="m-0 mt-1 font-display text-[28px] leading-none tabular-nums">
               {formatKcal(totalKcal)}
             </p>
           </div>
@@ -53,10 +53,10 @@ export function DiaryPage() {
             de {formatKcal(person.dailyCalories)}
           </p>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-guide-line/70">
+        <div className="h-2 overflow-hidden rounded-full bg-guide-line">
           <div
             className={`h-full rounded-full transition-[width] duration-300 ${
-              over ? "bg-guide-accent" : "bg-guide-success"
+              over ? "bg-guide-danger" : "bg-guide-accent"
             }`}
             style={{ width: `${percent}%` }}
           />
@@ -73,7 +73,7 @@ export function DiaryPage() {
                 key={meal.key}
                 className="flex items-baseline justify-between gap-2 text-sm"
               >
-                <span className="text-guide-muted">{meal.label}</span>
+                <span className="text-guide-body">{meal.label}</span>
                 <span className="tabular-nums">
                   {formatKcal(consumed)}
                   <span className="text-guide-muted">
@@ -90,7 +90,7 @@ export function DiaryPage() {
       <LogEntryForm person={person} />
 
       {entries.length === 0 ? (
-        <p className="m-0 rounded-3xl border border-dashed border-guide-line bg-guide-card/60 p-4 text-guide-muted">
+        <p className="m-0 rounded-card border-2 border-dashed border-guide-muted/25 p-4 text-center text-sm text-guide-muted">
           Nada registrado ainda.
         </p>
       ) : (
@@ -101,7 +101,7 @@ export function DiaryPage() {
           if (mealEntries.length === 0) return null;
           return (
             <section key={meal.key} className="grid gap-2">
-              <h2 className="m-0 text-xs font-bold tracking-[0.18em] text-guide-muted uppercase">
+              <h2 className="m-0 text-lg font-medium text-guide-ink">
                 {meal.label}
               </h2>
               <ul className="m-0 grid list-none gap-2 p-0">
@@ -115,10 +115,10 @@ export function DiaryPage() {
                   return (
                     <li
                       key={entry.id}
-                      className="flex items-center gap-3 rounded-2xl border border-guide-line bg-guide-card px-3 py-2.5"
+                      className="flex items-center gap-3 rounded-card bg-guide-card px-4 py-3 shadow-card"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="m-0 truncate font-bold">{name}</p>
+                        <p className="m-0 truncate font-medium">{name}</p>
                         <p className="m-0 text-sm text-guide-muted tabular-nums">
                           {portion} ·{" "}
                           {formatKcal(
@@ -130,7 +130,7 @@ export function DiaryPage() {
                         type="button"
                         aria-label={`Remover ${name}`}
                         onClick={() => removeEntry(entry.id)}
-                        className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-guide-line text-guide-muted transition-colors duration-150 hover:border-guide-accent/60 hover:text-guide-accent"
+                        className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-guide-line text-guide-body transition-colors duration-150 hover:bg-guide-danger-bg hover:text-guide-danger"
                       >
                         <svg
                           viewBox="0 0 24 24"

@@ -4,9 +4,6 @@ import type { MealKey } from "../domain/types.ts";
 export interface MealVisual {
   descriptor: string;
   image: string;
-  surface: string;
-  gradient: string;
-  ink: string;
   icon: ReactNode;
 }
 
@@ -66,41 +63,26 @@ export const MEAL_VISUALS: Record<MealKey, MealVisual> = {
   breakfast: {
     descriptor: "Comece o dia",
     image: "/refeicoes/cafe-da-manha.jpg",
-    surface: "bg-meal-breakfast",
-    gradient: "bg-meal-breakfast-grad",
-    ink: "text-meal-breakfast-ink",
     icon: <SunIcon />,
   },
   lunch: {
     descriptor: "Mais energia",
     image: "/refeicoes/almoco.jpg",
-    surface: "bg-meal-lunch",
-    gradient: "bg-meal-lunch-grad",
-    ink: "text-meal-lunch-ink",
     icon: <CutleryIcon />,
   },
   snack: {
     descriptor: "Mantenha o foco",
     image: "/refeicoes/lanche.jpg",
-    surface: "bg-meal-snack",
-    gradient: "bg-meal-snack-grad",
-    ink: "text-meal-snack-ink",
     icon: <LeafIcon />,
   },
   dinner: {
     descriptor: "Equilíbrio à noite",
     image: "/refeicoes/jantar.jpg",
-    surface: "bg-meal-dinner",
-    gradient: "bg-meal-dinner-grad",
-    ink: "text-meal-dinner-ink",
     icon: <PlateIcon />,
   },
   supper: {
     descriptor: "Uma escolha leve",
     image: "/refeicoes/ceia.jpg",
-    surface: "bg-meal-supper",
-    gradient: "bg-meal-supper-grad",
-    ink: "text-meal-supper-ink",
     icon: <MoonIcon />,
   },
 };

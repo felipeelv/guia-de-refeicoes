@@ -31,18 +31,18 @@ function Tile({
 }) {
   return (
     <label
-      className={`relative flex cursor-pointer flex-col gap-1 rounded-2xl border-2 p-3 pr-10 transition-[border-color,background-color,box-shadow,transform] duration-150 active:scale-[0.985] ${
+      className={`relative flex cursor-pointer flex-col gap-1 rounded-card border-2 p-3 pr-10 shadow-card transition-[border-color,background-color,box-shadow,transform] duration-150 active:scale-[0.985] ${
         selected
-          ? "border-guide-accent bg-guide-selected shadow-card"
-          : "border-guide-line bg-guide-card hover:border-guide-accent/50"
+          ? "border-guide-accent bg-guide-selected"
+          : "border-transparent bg-guide-card hover:border-guide-accent/40"
       } ${className}`}
     >
       {input}
       <span
         className={`pointer-events-none absolute top-3 right-3 flex size-5 items-center justify-center rounded-full border-2 transition-[background-color,border-color] duration-150 ${
           selected
-            ? "animate-pop border-guide-accent bg-guide-accent text-white"
-            : "border-guide-line bg-guide-card text-transparent"
+            ? "animate-pop border-guide-accent bg-guide-accent text-guide-ink"
+            : "border-guide-muted/40 bg-guide-card text-transparent"
         }`}
         aria-hidden="true"
       >
@@ -75,10 +75,10 @@ export function FoodSelector({
   const legendId = useId();
   return (
     <div role="group" aria-labelledby={legendId}>
-      <div className="mb-2 flex min-h-6 items-center justify-between gap-3">
+      <div className="mb-3 flex min-h-6 items-center justify-between gap-3">
         <span
           id={legendId}
-          className="text-xs font-bold tracking-[0.18em] text-guide-muted uppercase"
+          className="text-lg font-medium text-guide-ink"
         >
           {legend}
         </span>
@@ -100,7 +100,7 @@ export function FoodSelector({
               />
             }
           >
-            <span className="font-bold">{noneLabel}</span>
+            <span className="font-medium text-guide-ink">{noneLabel}</span>
           </Tile>
         ) : null}
         {foods.map((food) => {
@@ -121,7 +121,7 @@ export function FoodSelector({
                 />
               }
             >
-              <span className="leading-tight font-bold text-pretty">{food.name}</span>
+              <span className="leading-tight font-medium text-pretty text-guide-ink">{food.name}</span>
               <span className="line-clamp-2 text-xs leading-snug text-guide-muted">
                 {food.preparation}
               </span>

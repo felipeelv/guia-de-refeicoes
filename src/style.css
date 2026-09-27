@@ -1,39 +1,34 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Inter", "SF Pro Display", "Segoe UI", system-ui, sans-serif;
-  --font-sans: "Inter", "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  /* Tokens extraídos do Figma DineHub (Internal Only Canvas + telas). */
+  --font-display: "DM Sans", "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "DM Sans", "SF Pro Text", "Segoe UI", system-ui, sans-serif;
 
-  --color-guide-ink: #1f1a17;
-  --color-guide-muted: #6b6259;
-  --color-guide-paper: #fbf7f2;
+  --color-guide-ink: #0c1d2e;
+  --color-guide-body: #4a5f73;
+  --color-guide-muted: #748ba0;
+  --color-guide-paper: #f6f9f9;
   --color-guide-card: #ffffff;
-  --color-guide-line: #ece3d8;
-  --color-guide-accent: #c2551f;
-  --color-guide-focus: #8a3d14;
-  --color-guide-selected: #fdeade;
-  --color-guide-success: #3d7a38;
-  --color-guide-success-bg: #e6f1e3;
+  --color-guide-line: #e6f3f8;
+  --color-guide-chip: #e9f3f6;
+  --color-guide-accent: #00b0b9;
+  --color-guide-accent-ink: #00737a;
+  --color-guide-selected: #e6f7f8;
+  --color-guide-primary: #1c4ece;
+  --color-guide-primary-hover: #163fa8;
+  --color-guide-focus: #1c4ece;
+  --color-guide-hero: #96e2e4;
+  --color-guide-hero-deep: #74c9c6;
+  --color-guide-danger: #c52a33;
+  --color-guide-danger-bg: #fdecec;
+  --color-guide-success: #0b7a62;
+  --color-guide-success-bg: #e3f7f1;
 
-  --color-meal-breakfast: #fbe9c8;
-  --color-meal-breakfast-ink: #94600f;
-  --color-meal-lunch: #fadedb;
-  --color-meal-lunch-ink: #b04137;
-  --color-meal-snack: #dcebd7;
-  --color-meal-snack-ink: #4a7241;
-  --color-meal-dinner: #e3ddf6;
-  --color-meal-dinner-ink: #5d449b;
-  --color-meal-supper: #d8e6f3;
-  --color-meal-supper-ink: #396084;
+  --radius-card: 10px;
 
-  --background-image-meal-breakfast-grad: linear-gradient(135deg, #fbe9c8 0%, #f3d3a0 100%);
-  --background-image-meal-lunch-grad: linear-gradient(135deg, #fadedb 0%, #f2c2b1 100%);
-  --background-image-meal-snack-grad: linear-gradient(135deg, #dcebd7 0%, #bedbb6 100%);
-  --background-image-meal-dinner-grad: linear-gradient(135deg, #e3ddf6 0%, #c8bcea 100%);
-  --background-image-meal-supper-grad: linear-gradient(135deg, #d8e6f3 0%, #b4cde3 100%);
-
-  --shadow-card: 0 1px 2px rgb(31 26 23 / 0.06), 0 10px 28px rgb(31 26 23 / 0.08);
-  --shadow-pop: 0 -12px 40px rgb(31 26 23 / 0.16);
+  --shadow-card: 0 0 10px rgb(12 29 46 / 0.05);
+  --shadow-pop: 0 0 24px rgb(12 29 46 / 0.12);
 }
 
 html {
@@ -52,7 +47,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   touch-action: manipulation;
-  -webkit-tap-highlight-color: rgb(194 85 31 / 0.16);
+  -webkit-tap-highlight-color: rgb(0 176 185 / 0.16);
 }
 
 :focus:not(:focus-visible) {
@@ -67,12 +62,7 @@ body {
 .font-display {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.025em;
-}
-
-h1.font-display {
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.01em;
 }
 
 .person-select:has(:focus-visible) {

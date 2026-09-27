@@ -2,24 +2,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCatalog } from "../catalog/context.tsx";
 import type { Person } from "../domain/types.ts";
 
-function PersonIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="size-4"
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
-    </svg>
-  );
-}
-
 function ChevronIcon() {
   return (
     <svg
@@ -37,72 +19,143 @@ function ChevronIcon() {
   );
 }
 
+function LogoIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <circle
+        cx="12"
+        cy="12"
+        r="4.5"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth={2}
+      />
+    </svg>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="size-6"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="8.5" fill="currentColor" fillOpacity={0.15} />
+      <circle cx="12" cy="12" r="4" />
+    </svg>
+  );
+}
+
+function DiaryIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="size-6"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect
+        x="5"
+        y="3.5"
+        width="14"
+        height="17"
+        rx="2.5"
+        fill="currentColor"
+        fillOpacity={0.15}
+      />
+      <path d="M9 8.5h6M9 12h6M9 15.5h3.5" />
+    </svg>
+  );
+}
+
 export function PersonBar({ person }: { person: Person }) {
   const { persons } = useCatalog();
   const navigate = useNavigate();
   const { pathname, search } = useLocation();
-  const onDiary = pathname.endsWith("/diario");
   function switchTo(key: string) {
     const rest = pathname.replace(/^\/[^/]+/, "");
     navigate(`/${key}${rest}${search}`, { replace: true });
   }
   return (
-    <div className="sticky top-0 z-20 border-b border-white/50 bg-guide-paper/80 shadow-[0_1px_10px_rgb(31_26_23/0.05)] backdrop-blur-md">
-      <div className="mx-auto flex w-full max-w-md items-center justify-between gap-3 px-4 py-2.5">
+    <div className="sticky top-0 z-20 bg-guide-paper/85 backdrop-blur-md">
+      <div className="mx-auto flex min-h-13 w-full max-w-md items-center justify-between gap-3 px-5 py-2">
+        <label className="person-select relative flex min-h-10 min-w-0 items-center gap-2.5 rounded-card pr-1">
+          <span className="sr-only">Pessoa</span>
+          <span
+            aria-hidden="true"
+            className="flex size-7 shrink-0 items-center justify-center rounded-full bg-guide-line text-xs font-bold text-guide-accent-ink"
+          >
+            {person.name.charAt(0)}
+          </span>
+          <select
+            value={person.key}
+            onChange={(event) => switchTo(event.target.value)}
+            className="max-w-44 cursor-pointer appearance-none truncate bg-transparent pr-5 text-sm text-guide-body outline-none"
+          >
+            {persons.map((option) => (
+              <option key={option.key} value={option.key}>
+                {option.name}
+              </option>
+            ))}
+          </select>
+          <span className="pointer-events-none absolute right-0 text-guide-muted">
+            <ChevronIcon />
+          </span>
+        </label>
         <Link
           to={`/${person.key}`}
-          className="min-w-0 truncate font-display text-base whitespace-nowrap text-guide-ink no-underline"
+          className="flex shrink-0 items-center gap-1.5 text-sm font-medium whitespace-nowrap text-guide-ink no-underline"
         >
+          <span className="text-guide-accent">
+            <LogoIcon />
+          </span>
           Guia de refeições
         </Link>
-        <div className="flex shrink-0 items-center gap-2">
-          <label className="person-select relative flex min-h-10 items-center gap-1.5 rounded-full border border-guide-line bg-guide-card pr-2 pl-3 text-guide-accent transition-[border-color] duration-150 hover:border-guide-accent/60">
-            <span className="sr-only">Pessoa</span>
-            <PersonIcon />
-            <select
-              value={person.key}
-              onChange={(event) => switchTo(event.target.value)}
-              className="max-w-36 cursor-pointer appearance-none truncate bg-transparent pr-5 font-bold text-guide-ink outline-none"
-            >
-              {persons.map((option) => (
-                <option key={option.key} value={option.key}>
-                  {option.name}
-                </option>
-              ))}
-            </select>
-            <span className="pointer-events-none absolute right-2">
-              <ChevronIcon />
-            </span>
-          </label>
-        </div>
       </div>
-      <nav
-        aria-label="Seções"
-        className="mx-auto flex w-full max-w-md gap-2 px-4 pb-2.5"
-      >
-        <Link
-          to={`/${person.key}`}
-          aria-current={onDiary ? undefined : "page"}
-          className={`rounded-full px-3 py-1.5 text-sm font-bold no-underline transition-colors duration-150 ${
-            onDiary
-              ? "text-guide-muted hover:text-guide-ink"
-              : "bg-guide-ink text-white"
-          }`}
-        >
-          Cardápio
-        </Link>
-        <Link
-          to={`/${person.key}/diario`}
-          aria-current={onDiary ? "page" : undefined}
-          className={`rounded-full px-3 py-1.5 text-sm font-bold no-underline transition-colors duration-150 ${
-            onDiary
-              ? "bg-guide-ink text-white"
-              : "text-guide-muted hover:text-guide-ink"
-          }`}
-        >
-          Diário
-        </Link>
-      </nav>
     </div>
+  );
+}
+
+export function TabBar({ person }: { person: Person }) {
+  const { pathname } = useLocation();
+  const onDiary = pathname.endsWith("/diario");
+  const tabs = [
+    { label: "Cardápio", to: `/${person.key}`, active: !onDiary, icon: <MenuIcon /> },
+    { label: "Diário", to: `/${person.key}/diario`, active: onDiary, icon: <DiaryIcon /> },
+  ];
+  return (
+    <nav
+      aria-label="Seções"
+      className="fixed inset-x-0 bottom-0 z-30 px-5 pb-[max(1rem,env(safe-area-inset-bottom))]"
+    >
+      <div className="mx-auto flex h-16 max-w-md items-stretch justify-around rounded-card bg-guide-card shadow-pop">
+        {tabs.map((tab) => (
+          <Link
+            key={tab.label}
+            to={tab.to}
+            aria-current={tab.active ? "page" : undefined}
+            className={`flex min-w-20 flex-col items-center justify-center gap-0.5 text-[11px] no-underline transition-colors duration-150 ${
+              tab.active
+                ? "font-bold text-guide-ink [&_svg]:text-guide-accent"
+                : "text-guide-muted hover:text-guide-ink"
+            }`}
+          >
+            {tab.icon}
+            {tab.label}
+          </Link>
+        ))}
+      </div>
+    </nav>
   );
 }

@@ -40,10 +40,10 @@ function Steps({ states }: { states: [StepState, StepState, StepState] }) {
             <span
               className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                 state === "done"
-                  ? "bg-guide-accent text-white"
+                  ? "bg-guide-accent text-guide-ink"
                   : state === "current"
-                    ? "border-2 border-guide-accent bg-guide-card text-guide-accent"
-                    : "border-2 border-guide-line bg-guide-card text-guide-muted"
+                    ? "border-2 border-guide-accent bg-guide-card text-guide-accent-ink"
+                    : "border-2 border-guide-muted/30 bg-guide-card text-guide-muted"
               }`}
               aria-hidden="true"
             >
@@ -51,7 +51,7 @@ function Steps({ states }: { states: [StepState, StepState, StepState] }) {
             </span>
             <span
               className={`truncate text-xs ${
-                state === "pending" ? "text-guide-muted" : "font-bold text-guide-ink"
+                state === "pending" ? "text-guide-muted" : "font-medium text-guide-ink"
               }`}
             >
               {label}
@@ -59,7 +59,7 @@ function Steps({ states }: { states: [StepState, StepState, StepState] }) {
             {index < labels.length - 1 ? (
               <span
                 className={`h-0.5 min-w-2 flex-1 rounded-full ${
-                  state === "done" ? "bg-guide-accent" : "bg-guide-line"
+                  state === "done" ? "bg-guide-accent" : "bg-guide-muted/25"
                 }`}
                 aria-hidden="true"
               />
@@ -77,10 +77,10 @@ function StickySummary({ result }: { result: PortionCalculationResult }) {
     : [result.carbohydrate, result.protein];
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-10 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+      className="pointer-events-none fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-10 px-5"
       aria-hidden="true"
     >
-      <div className="mx-auto max-w-md rounded-3xl border border-white/50 bg-guide-card/80 px-4 py-3 shadow-pop ring-1 ring-black/5 backdrop-blur-md">
+      <div className="mx-auto max-w-md rounded-card bg-guide-ink/95 px-4 py-3 text-white shadow-pop backdrop-blur-md">
         <div className="flex items-end justify-between gap-2">
           {items.map((item, index) => (
             <div key={item.foodId} className="flex min-w-0 items-end gap-2">
@@ -90,7 +90,7 @@ function StickySummary({ result }: { result: PortionCalculationResult }) {
                 </span>
               ) : null}
               <p className="m-0 min-w-0">
-                <span className="block truncate text-xs text-guide-muted">
+                <span className="block truncate text-xs text-white/70">
                   {item.name}
                 </span>
                 <span className="block truncate font-display text-xl tabular-nums">
@@ -187,21 +187,29 @@ export function MealBuilderScreen({
 
   return (
     <main
-      className={`mx-auto grid w-full max-w-md gap-6 px-4 py-5 ${
-        outcome.kind === "result" ? "pb-40" : "pb-[max(2rem,env(safe-area-inset-bottom))]"
+      className={`mx-auto grid w-full max-w-md gap-6 px-5 pt-2 ${
+        outcome.kind === "result"
+          ? "pb-[calc(12rem+env(safe-area-inset-bottom))]"
+          : "pb-[calc(7rem+env(safe-area-inset-bottom))]"
       }`}
     >
       <header className="grid gap-4">
-        <div
-          className={`relative flex items-center gap-3 overflow-hidden rounded-3xl ${visual.gradient} p-4 shadow-card`}
-        >
-          <span
-            className={`flex size-10 shrink-0 items-center justify-center rounded-full bg-white/60 backdrop-blur-sm ${visual.ink}`}
-          >
-            {visual.icon}
-          </span>
-          <div className="relative min-w-0 flex-1">
-            <h1 className="font-display m-0 text-2xl leading-tight text-pretty">
+        <div className="overflow-hidden rounded-card bg-guide-card shadow-card">
+          <div className="relative h-36 bg-guide-line">
+            <img
+              src={visual.image}
+              alt=""
+              width={460}
+              height={460}
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <span className="absolute top-3 left-3 flex size-9 items-center justify-center rounded-full bg-white/85 text-guide-accent-ink backdrop-blur-sm [&_svg]:size-5">
+              {visual.icon}
+            </span>
+          </div>
+          <div className="grid gap-0.5 px-4 py-3">
+            <h1 className="font-display m-0 text-[22px] leading-tight text-pretty">
               {meal.label}
             </h1>
             <p className="m-0 text-sm text-guide-muted">
@@ -231,7 +239,7 @@ export function MealBuilderScreen({
               <button
                 type="button"
                 onClick={closeSecond}
-                className="min-h-8 cursor-pointer rounded-full border-0 bg-transparent px-2 text-xs font-bold text-guide-accent hover:underline"
+                className="min-h-8 cursor-pointer rounded-card border-0 bg-transparent px-2 text-sm font-medium text-guide-accent-ink hover:underline"
               >
                 Remover
               </button>
@@ -242,7 +250,7 @@ export function MealBuilderScreen({
             type="button"
             onClick={() => setSecondRequested(true)}
             aria-expanded="false"
-            className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-guide-line bg-transparent px-4 font-bold text-guide-accent transition-[border-color,background-color] duration-150 hover:border-guide-accent/60 hover:bg-guide-card"
+            className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-card border-2 border-dashed border-guide-accent/40 bg-transparent px-4 font-medium text-guide-accent-ink transition-[border-color,background-color] duration-150 hover:border-guide-accent hover:bg-guide-card"
           >
             <span aria-hidden="true" className="font-display text-xl leading-none">
               +
@@ -261,14 +269,14 @@ export function MealBuilderScreen({
       <div aria-live="polite">
         {outcome.kind === "error" ? (
           <p
-            className="m-0 rounded-3xl border border-guide-line bg-guide-card p-4 shadow-card"
+            className="m-0 rounded-card bg-guide-danger-bg p-4 text-guide-danger"
             role="alert"
           >
             {CALCULATION_ERROR_MESSAGE}
           </p>
         ) : null}
         {outcome.kind === "incomplete" && instruction ? (
-          <p className="m-0 rounded-3xl border border-dashed border-guide-line bg-guide-card/60 p-4 text-guide-muted">
+          <p className="m-0 rounded-card border-2 border-dashed border-guide-muted/25 p-4 text-center text-sm text-guide-muted">
             {instruction}
           </p>
         ) : null}
@@ -298,7 +306,7 @@ export function MealBuilderScreen({
               }
               setLoggedSignature(resultSignature(result));
             }}
-            className="mt-3 inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-2xl border-2 border-guide-accent bg-transparent px-4 font-bold text-guide-accent transition-[background-color,color,border-color,transform] duration-150 hover:bg-guide-selected active:scale-[0.99] disabled:cursor-default disabled:border-guide-success disabled:text-guide-success"
+            className="mt-4 inline-flex min-h-[50px] w-full cursor-pointer items-center justify-center rounded-card border-0 bg-guide-primary px-4 font-bold text-white transition-[background-color,color,transform] duration-150 hover:bg-guide-primary-hover active:scale-[0.99] disabled:cursor-default disabled:bg-guide-success-bg disabled:text-guide-success"
           >
             {loggedSignature === resultSignature(outcome.result)
               ? "Registrado no diário"
@@ -312,7 +320,7 @@ export function MealBuilderScreen({
       </p>
       <Link
         to={`/${person.key}`}
-        className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-guide-accent px-4 text-center font-bold text-white no-underline transition-[background-color,transform] duration-150 hover:bg-guide-focus active:scale-[0.99]"
+        className="inline-flex min-h-[50px] items-center justify-center rounded-card bg-guide-card px-4 text-center font-medium text-guide-ink no-underline shadow-card transition-[background-color,transform] duration-150 hover:bg-guide-line active:scale-[0.99]"
       >
         Escolher outra refeição
       </Link>

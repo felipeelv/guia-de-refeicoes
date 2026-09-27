@@ -3,7 +3,7 @@ import type { Food } from "../domain/types.ts";
 export function DataSourceNotice({ foods }: { foods: Food[] }) {
   return (
     <div className="text-sm text-guide-muted">
-      <p className="m-0 text-xs font-bold tracking-[0.16em] uppercase">
+      <p className="m-0 text-sm font-medium text-guide-body">
         Fonte nutricional
       </p>
       <ul className="mt-1 mb-0 list-none p-0">
@@ -15,7 +15,7 @@ export function DataSourceNotice({ foods }: { foods: Food[] }) {
                 {" "}
                 <a
                   href={food.source.url}
-                  className="font-bold text-guide-accent underline-offset-2 hover:underline"
+                  className="font-medium text-guide-accent-ink underline-offset-2 hover:underline"
                   rel="noreferrer"
                 >
                   ficha
