@@ -433,3 +433,242 @@ test("arroz com feijão divide o carboidrato do almoço real", () => {
   assert.equal(result.totalCalories, 541);
   assert.equal(result.toleranceStatus, "within");
 });
+
+test("café e almoço dividem a energia da proteína entre duas fontes", () => {
+  const carb = food({
+    id: "carboidrato",
+    category: "carbohydrate",
+    caloriesPer100g: 100,
+  });
+  const protein = food({
+    id: "proteina-1",
+    category: "protein",
+    caloriesPer100g: 200,
+  });
+  const protein2 = food({
+    id: "proteina-2",
+    category: "protein",
+    caloriesPer100g: 150,
+  });
+  for (const key of ["breakfast", "lunch"] as const) {
+    const meal: MealConfig = {
+      key,
+      label: key,
+      targetCalories: 400,
+      carbohydrateShare: 0.4,
+      proteinShare: 0.6,
+      order: 1,
+    };
+    const result = calculatePortions({
+      meal,
+      carbohydrateFood: carb,
+      proteinFood: protein,
+      secondProteinFood: protein2,
+      roundingIncrementGrams: 10,
+    });
+    assert.equal(result.carbohydrate.grams, 160);
+    assert.equal(result.carbohydrate.calories, 160);
+    assert.equal(result.protein.grams, 60);
+    assert.equal(result.protein.calories, 120);
+    assert.ok(result.secondProtein);
+    assert.equal(result.secondProtein.foodId, "proteina-2");
+    assert.equal(result.secondProtein.grams, 80);
+    assert.equal(result.secondProtein.calories, 120);
+    assert.equal(result.totalCalories, 400);
+    assert.equal(result.differenceCalories, 0);
+    assert.equal(result.toleranceStatus, "within");
+    assert.equal(result.secondCarbohydrate, null);
+
+    const alone = calculatePortions({
+      meal,
+      carbohydrateFood: carb,
+      proteinFood: protein,
+      roundingIncrementGrams: 10,
+    });
+    assert.equal(alone.protein.grams, 120);
+    assert.equal(alone.secondProtein, null);
+    assert.equal(result.carbohydrate.grams, alone.carbohydrate.grams);
+  }
+});
+
+test("segunda proteína não altera o segundo carboidrato e as demais refeições a ignoram", () => {
+  const breakfast: MealConfig = {
+    key: "breakfast",
+    label: "Café da manhã",
+    targetCalories: 400,
+    carbohydrateShare: 0.4,
+    proteinShare: 0.6,
+    order: 1,
+  };
+  const carb = food({
+    id: "carboidrato",
+    category: "carbohydrate",
+    caloriesPer100g: 100,
+  });
+  const carb2 = food({
+    id: "carboidrato-2",
+    category: "carbohydrate",
+    caloriesPer100g: 200,
+  });
+  const protein = food({
+    id: "proteina-1",
+    category: "protein",
+    caloriesPer100g: 200,
+  });
+  const protein2 = food({
+    id: "proteina-2",
+    category: "protein",
+    caloriesPer100g: 150,
+  });
+  const withBoth = calculatePortions({
+    meal: breakfast,
+    carbohydrateFood: carb,
+    secondCarbohydrateFood: carb2,
+    proteinFood: protein,
+    secondProteinFood: protein2,
+    roundingIncrementGrams: 10,
+  });
+  const carbSplitOnly = calculatePortions({
+    meal: breakfast,
+    carbohydrateFood: carb,
+    secondCarbohydrateFood: carb2,
+    proteinFood: protein,
+    roundingIncrementGrams: 10,
+  });
+  assert.equal(withBoth.carbohydrate.grams, 80);
+  assert.equal(withBoth.secondCarbohydrate?.grams, 40);
+  assert.equal(withBoth.carbohydrate.grams, carbSplitOnly.carbohydrate.grams);
+  assert.equal(
+    withBoth.secondCarbohydrate?.grams,
+    carbSplitOnly.secondCarbohydrate?.grams,
+  );
+  assert.equal(withBoth.protein.grams, 60);
+  assert.equal(withBoth.secondProtein?.grams, 80);
+  assert.equal(carbSplitOnly.protein.grams, 120);
+  assert.equal(carbSplitOnly.secondProtein, null);
+
+  for (const key of ["snack", "dinner", "supper"] as const) {
+    const meal: MealConfig = { ...breakfast, key, label: key };
+    const plain = calculatePortions({
+      meal,
+      carbohydrateFood: carb,
+      secondCarbohydrateFood: carb2,
+      proteinFood: protein,
+      roundingIncrementGrams: 10,
+    });
+    const ignored = calculatePortions({
+      meal,
+      carbohydrateFood: carb,
+      secondCarbohydrateFood: carb2,
+      proteinFood: protein,
+      secondProteinFood: food({
+        id: "categoria-errada",
+        category: "carbohydrate",
+        caloriesPer100g: 0,
+      }),
+      roundingIncrementGrams: 10,
+    });
+    assert.deepEqual(ignored, plain);
+    assert.equal(ignored.secondProtein, null);
+    assert.equal(ignored.secondCarbohydrate?.grams, 40);
+  }
+});
+
+test("café rejeita segunda proteína repetida, inativa ou de outra categoria", () => {
+  const breakfast: MealConfig = {
+    key: "breakfast",
+    label: "Café da manhã",
+    targetCalories: 400,
+    carbohydrateShare: 0.4,
+    proteinShare: 0.6,
+    order: 1,
+  };
+  const base = {
+    meal: breakfast,
+    carbohydrateFood: food({
+      id: "carboidrato",
+      category: "carbohydrate" as const,
+      caloriesPer100g: 100,
+    }),
+    proteinFood: food({
+      id: "proteina-1",
+      category: "protein" as const,
+      caloriesPer100g: 200,
+    }),
+  };
+  assert.throws(
+    () =>
+      calculatePortions({
+        ...base,
+        secondProteinFood: food({
+          id: "proteina-1",
+          category: "protein",
+          caloriesPer100g: 200,
+        }),
+      }),
+    PortionCalculationError,
+  );
+  assert.throws(
+    () =>
+      calculatePortions({
+        ...base,
+        secondProteinFood: food({
+          id: "nao-proteina",
+          category: "carbohydrate",
+          caloriesPer100g: 100,
+        }),
+      }),
+    PortionCalculationError,
+  );
+  assert.throws(
+    () =>
+      calculatePortions({
+        ...base,
+        secondProteinFood: food({
+          id: "sem-energia",
+          category: "protein",
+          caloriesPer100g: 0,
+        }),
+      }),
+    PortionCalculationError,
+  );
+});
+
+test("segunda proteína em unidade fecha no passo e o restante absorve a sobra", () => {
+  const breakfast: MealConfig = {
+    key: "breakfast",
+    label: "Café da manhã",
+    targetCalories: 400,
+    carbohydrateShare: 0.4,
+    proteinShare: 0.6,
+    order: 1,
+  };
+  const result = calculatePortions({
+    meal: breakfast,
+    carbohydrateFood: food({
+      id: "aveia",
+      category: "carbohydrate",
+      caloriesPer100g: 100,
+    }),
+    proteinFood: food({
+      id: "ovo",
+      category: "protein",
+      caloriesPer100g: 125,
+      unit: { singular: "ovo", plural: "ovos", gramsPerUnit: 50, stepUnits: 0.5 },
+    }),
+    secondProteinFood: food({
+      id: "queijo",
+      category: "protein",
+      caloriesPer100g: 200,
+    }),
+    roundingIncrementGrams: 10,
+  });
+  assert.equal(result.protein.grams, 100);
+  assert.equal(result.protein.units, 2);
+  assert.equal(result.protein.calories, 125);
+  assert.equal(result.carbohydrate.grams, 160);
+  assert.equal(result.secondProtein?.grams, 60);
+  assert.equal(result.secondProtein?.calories, 120);
+  assert.equal(result.totalCalories, 405);
+  assert.equal(result.toleranceStatus, "within");
+});
