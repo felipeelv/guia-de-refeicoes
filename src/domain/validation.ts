@@ -107,6 +107,22 @@ export function validateInput(input: PortionCalculationInput): void {
   if (input.proteinFood.category !== "protein") {
     throw new PortionCalculationError("A proteína está na categoria errada.");
   }
+  if (input.secondProteinFood) {
+    if (input.secondProteinFood.category !== "protein") {
+      throw new PortionCalculationError(
+        "A segunda proteína está na categoria errada.",
+      );
+    }
+    const duplicate =
+      input.secondProteinFood.id === input.proteinFood.id ||
+      input.secondProteinFood.id === input.carbohydrateFood.id ||
+      input.secondProteinFood.id === input.secondCarbohydrateFood?.id;
+    if (duplicate) {
+      throw new PortionCalculationError(
+        "A segunda proteína repete um alimento já escolhido.",
+      );
+    }
+  }
   const carbohydrateEnergy = foodEnergyError(
     input.carbohydrateFood,
     "Carboidrato",
@@ -121,6 +137,15 @@ export function validateInput(input: PortionCalculationInput): void {
   }
   const proteinEnergy = foodEnergyError(input.proteinFood, "Proteína");
   if (proteinEnergy) throw new PortionCalculationError(proteinEnergy);
+  if (input.secondProteinFood) {
+    const secondProteinEnergy = foodEnergyError(
+      input.secondProteinFood,
+      "Segunda proteína",
+    );
+    if (secondProteinEnergy) {
+      throw new PortionCalculationError(secondProteinEnergy);
+    }
+  }
   const increment = input.roundingIncrementGrams ?? 10;
   if (!Number.isInteger(increment) || increment <= 0) {
     throw new PortionCalculationError("Incremento de arredondamento inválido.");

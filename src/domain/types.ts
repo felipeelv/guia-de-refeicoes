@@ -65,6 +65,8 @@ export interface PortionCalculationInput {
   carbohydrateFood: Food;
   secondCarbohydrateFood?: Food | null;
   proteinFood: Food;
+  /** Só entra no cálculo calórico do café da manhã e do almoço. */
+  secondProteinFood?: Food | null;
   roundingIncrementGrams?: number;
   tolerancePercent?: number;
 }
@@ -86,6 +88,7 @@ export interface PortionCalculationResult {
   carbohydrate: PortionResultItem;
   secondCarbohydrate: PortionResultItem | null;
   protein: PortionResultItem;
+  secondProtein: PortionResultItem | null;
   totalCalories: number;
   differenceCalories: number;
   differencePercent: number;
@@ -251,7 +254,7 @@ export interface PortionSolutionItem {
   fatGrams: number;
 }
 
-/** Resultado de solveMealPortions. A busca em si fica para a onda seguinte. */
+/** Resultado de solveMealPortions. */
 export interface PortionSolution {
   mealKey: MealKey;
   state: PortionSolutionState;

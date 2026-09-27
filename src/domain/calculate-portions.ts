@@ -96,28 +96,44 @@ function allocatePortions(
 export function calculatePortions(
   input: PortionCalculationInput,
 ): PortionCalculationResult {
-  validateInput(input);
+  const allowsSecondProtein =
+    input.meal?.key === "breakfast" || input.meal?.key === "lunch";
+  const secondProteinFood = allowsSecondProtein
+    ? (input.secondProteinFood ?? null)
+    : null;
+  validateInput({ ...input, secondProteinFood });
   const increment = input.roundingIncrementGrams ?? 10;
   const tolerance = input.tolerancePercent ?? 0.05;
   const secondCarbohydrateFood = input.secondCarbohydrateFood ?? null;
   const carbohydrateShare = secondCarbohydrateFood
     ? input.meal.carbohydrateShare / 2
     : input.meal.carbohydrateShare;
+  const proteinShare = secondProteinFood
+    ? input.meal.proteinShare / 2
+    : input.meal.proteinShare;
   const slots: PortionSlot[] = [
     { food: input.carbohydrateFood, share: carbohydrateShare },
     ...(secondCarbohydrateFood
       ? [{ food: secondCarbohydrateFood, share: carbohydrateShare }]
       : []),
-    { food: input.proteinFood, share: input.meal.proteinShare },
+    { food: input.proteinFood, share: proteinShare },
+    ...(secondProteinFood
+      ? [{ food: secondProteinFood, share: proteinShare }]
+      : []),
   ];
 
   const portions = allocatePortions(slots, input.meal.targetCalories, increment);
-  const carbohydrate = portions[0]!;
-  const secondCarbohydrate = secondCarbohydrateFood ? portions[1]! : null;
-  const protein = portions[portions.length - 1]!;
+  let cursor = 0;
+  const carbohydrate = portions[cursor++]!;
+  const secondCarbohydrate = secondCarbohydrateFood ? portions[cursor++]! : null;
+  const protein = portions[cursor++]!;
+  const secondProtein = secondProteinFood ? portions[cursor++]! : null;
 
   const totalCalories = roundDisplay(
-    carbohydrate.calories + (secondCarbohydrate?.calories ?? 0) + protein.calories,
+    carbohydrate.calories +
+      (secondCarbohydrate?.calories ?? 0) +
+      protein.calories +
+      (secondProtein?.calories ?? 0),
   );
   const differenceCalories = roundDisplay(
     totalCalories - input.meal.targetCalories,
@@ -129,6 +145,7 @@ export function calculatePortions(
     carbohydrate: carbohydrate.item,
     secondCarbohydrate: secondCarbohydrate?.item ?? null,
     protein: protein.item,
+    secondProtein: secondProtein?.item ?? null,
     totalCalories,
     differenceCalories,
     differencePercent,
