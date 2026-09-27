@@ -34,7 +34,36 @@ class MemoryStorage implements ProfileStorage {
 }
 
 test("a biblioteca extra tem ficha TBCA e não repete os 26 alimentos", () => {
-  assert.equal(libraryFoods.length, 14);
+  const previousLibraryIds = [
+    "pao-integral",
+    "cuscuz",
+    "inhame",
+    "abobora",
+    "lentilha",
+    "grao-de-bico",
+    "milho",
+    "laranja",
+    "morango",
+    "atum",
+    "peito-de-peru",
+    "clara-de-ovo",
+    "queijo-cottage",
+    "iogurte-desnatado",
+  ];
+  const addedCount = 32;
+  assert.equal(libraryFoods.length, previousLibraryIds.length + addedCount);
+  for (const id of previousLibraryIds) {
+    assert.equal(
+      libraryFoods.some((food) => food.id === id),
+      true,
+      id,
+    );
+  }
+  const slicedBread = libraryFoods.find((food) => food.id === "pao-de-forma");
+  assert.ok(slicedBread);
+  assert.equal(slicedBread.name, "Pão de forma");
+  assert.equal(slicedBread.source.name, "TBCA");
+  assert.equal(slicedBread.source.code, "BRC0003A");
   const baseIds = new Set(foods.map((food) => food.id));
   const codes = new Set<string>();
   for (const food of libraryFoods) {
@@ -58,10 +87,24 @@ test("a busca encontra um item da biblioteca pelo nome", () => {
     ["atum"],
   );
   assert.equal(searchLibrary("").length, 0);
-  assert.equal(searchLibrary("arroz").length, 0);
+  assert.equal(searchLibrary("feijao").length, 0);
+  assert.deepEqual(
+    searchLibrary("arroz").map((food) => food.id),
+    ["arroz-parboilizado"],
+  );
   assert.deepEqual(
     searchLibrary("Pao").map((food) => food.name),
-    ["Pão integral"],
+    [
+      "Pão integral",
+      "Pão de forma",
+      "Pão de forma integral",
+      "Pão sírio",
+      "Pão de hambúrguer",
+    ],
+  );
+  assert.deepEqual(
+    searchLibrary("pão de forma").map((food) => food.id),
+    ["pao-de-forma", "pao-de-forma-integral"],
   );
 });
 
