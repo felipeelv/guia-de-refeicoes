@@ -18,7 +18,14 @@ import {
 import { dietFlags } from "../diet/flags.ts";
 import { CATALOG_VERSION } from "../diet/solver-input.ts";
 import { formatKcal } from "../format.ts";
+import {
+  adjustMealPercents,
+  canDecreaseMealPercent,
+  canIncreaseMealPercent,
+  normalizeMealPercents,
+} from "../domain/nutrition/adjust-meal-shares.ts";
 import { createDietProposal } from "../domain/nutrition/create-diet-plan.ts";
+import { MEAL_KEYS } from "../domain/nutrition/distribute-targets.ts";
 import { experimentalV1Policy } from "../domain/nutrition/policy.ts";
 import {
   convertHeightToCentimeters,
@@ -88,10 +95,16 @@ function entryInvalid(
   return issues.some((item) => item.field === field && item.code !== "required");
 }
 
-function percentEntryInvalid(raw: string): boolean {
-  if (raw.trim() === "") return false;
-  const value = parseBrazilianDecimal(raw);
-  return !Number.isFinite(value) || value <= 0;
+function readMealPercents(raw: Record<MealKey, string>): Record<MealKey, number> {
+  const values = {} as Record<MealKey, number>;
+  for (const key of MEAL_KEYS) values[key] = parseBrazilianDecimal(raw[key] ?? "");
+  return values;
+}
+
+function mealPercentFields(values: Readonly<Record<MealKey, number>>): Record<MealKey, string> {
+  const fields = {} as Record<MealKey, string>;
+  for (const key of MEAL_KEYS) fields[key] = String(values[key]);
+  return fields;
 }
 
 const primaryButton =
@@ -102,6 +115,8 @@ const quietButton =
 // O diário mantém o poço sem borda de propósito, dentro do cartão branco.
 const fieldClass =
   "box-border min-h-[50px] w-full rounded-card border-2 border-solid border-guide-muted bg-guide-paper px-4 py-3 font-sans text-base text-guide-ink ring-offset-2 ring-offset-guide-paper focus-visible:border-guide-focus focus-visible:ring-2 focus-visible:ring-guide-focus aria-invalid:border-[3px] aria-invalid:border-guide-danger aria-invalid:ring-2 aria-invalid:ring-guide-danger";
+const shareButton =
+  "inline-flex min-h-[50px] cursor-pointer items-center justify-center rounded-card border-2 border-solid border-guide-muted bg-guide-paper px-3 font-medium text-guide-ink disabled:cursor-default disabled:opacity-40";
 
 export function CalculateDietPage() {
   const adjusted = useOutletContext<Person>();
@@ -162,6 +177,21 @@ export function CalculateDietPage() {
   );
   const showHeightReview = form.heightUnit === "m" && Number.isFinite(heightCm);
   const canApply = Boolean(validation.valid && proposal?.daily && !applied);
+  const normalizedMeals = normalizeMealPercents(readMealPercents(form.mealPercents));
+  const normalizedFields = mealPercentFields(normalizedMeals);
+  if (
+    step === 3 &&
+    MEAL_KEYS.some((key) => (form.mealPercents[key] ?? "") !== normalizedFields[key])
+  ) {
+    update({ mealPercents: normalizedFields });
+  }
+  const mealTotal = MEAL_KEYS.reduce((sum, key) => sum + normalizedMeals[key], 0);
+
+  function changeMealPercent(mealKey: MealKey, delta: 1 | -1) {
+    update({
+      mealPercents: mealPercentFields(adjustMealPercents(normalizedMeals, mealKey, delta)),
+    });
+  }
 
   function apply() {
     if (!validation.assessment || !proposal?.daily || !validation.valid) return;
@@ -432,28 +462,43 @@ export function CalculateDietPage() {
 
       {step === 3 ? (
         <section className="grid gap-3">
-          <p className="m-0 text-sm text-guide-muted">
-            As cinco refeições permanecem. Ajuste a participação de cada uma. A soma precisa ser 100%.
-          </p>
-          {mealsInOrder(person.meals).map((meal) => (
-            <label key={meal.key} className="grid gap-1.5 text-sm text-guide-body">
-              {meal.label} (%)
-              <input
-                inputMode="decimal"
-                value={form.mealPercents[meal.key]}
-                onChange={(event) =>
-                  update({
-                    mealPercents: {
-                      ...form.mealPercents,
-                      [meal.key]: event.target.value,
-                    },
-                  })
-                }
-                aria-invalid={percentEntryInvalid(form.mealPercents[meal.key]) || undefined}
-                className={fieldClass}
-              />
-            </label>
-          ))}
+          <h2 className="font-display m-0 text-[22px] leading-snug">100% para distribuir</h2>
+          <p className="m-0 text-sm font-medium text-guide-body tabular-nums">Total {mealTotal}%</p>
+          <ul className="m-0 grid list-none gap-2 p-0" aria-label="Participação das refeições">
+            {mealsInOrder(person.meals).map((meal) => {
+              const accessibleName = meal.label.toLocaleLowerCase("pt-BR");
+              return (
+                <li key={meal.key} className="grid gap-2 rounded-card bg-guide-card p-3 shadow-card">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="font-medium text-guide-ink">{meal.label}</span>
+                    <span className="tabular-nums font-medium text-guide-ink">
+                      {normalizedMeals[meal.key]}%
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      className={shareButton}
+                      aria-label={`Menos ${accessibleName}`}
+                      disabled={!canDecreaseMealPercent(normalizedMeals, meal.key)}
+                      onClick={() => changeMealPercent(meal.key, -1)}
+                    >
+                      Menos
+                    </button>
+                    <button
+                      type="button"
+                      className={shareButton}
+                      aria-label={`Mais ${accessibleName}`}
+                      disabled={!canIncreaseMealPercent(normalizedMeals, meal.key)}
+                      onClick={() => changeMealPercent(meal.key, 1)}
+                    >
+                      Mais
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         </section>
       ) : null}
 
