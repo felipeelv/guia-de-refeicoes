@@ -1,6 +1,9 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useCatalog } from "../catalog/context.tsx";
 import { mealsInOrder } from "../catalog/meals.ts";
+import { useOptionalDiet } from "../diet/DietContext.tsx";
+import { dietFlags } from "../diet/flags.ts";
+import { freezeFromFood } from "../diet/nutrient-display.ts";
 import { formatGrams, formatUnits } from "../format.ts";
 import { useLog } from "./LogContext.tsx";
 import type { MealKey, Person } from "../domain/types.ts";
@@ -8,6 +11,7 @@ import type { MealKey, Person } from "../domain/types.ts";
 export function LogEntryForm({ person }: { person: Person }) {
   const { foods } = useCatalog();
   const { addEntry } = useLog();
+  const diet = useOptionalDiet();
   const [mealKey, setMealKey] = useState<MealKey>("lunch");
   const [foodId, setFoodId] = useState("");
   const [gramsText, setGramsText] = useState("");
@@ -39,7 +43,18 @@ export function LogEntryForm({ person }: { person: Person }) {
   function submit(event: FormEvent) {
     event.preventDefault();
     if (!valid || !food) return;
-    addEntry({ foodId: food.id, grams, mealKey });
+    if (dietFlags.diaryV2 && diet) {
+      const saved = diet.addManualEntry({
+        food,
+        grams,
+        units: food.unit ? unitsValue : null,
+        mealKey,
+        nutrients: freezeFromFood(food, grams),
+      });
+      if (!saved) return;
+    } else {
+      addEntry({ foodId: food.id, grams, mealKey });
+    }
     setFoodId("");
     setGramsText("");
     setUnitsValue(1);

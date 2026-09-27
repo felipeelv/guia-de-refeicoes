@@ -127,3 +127,17 @@ Cada item precisa de:
 - `active: true` para aparecer nos seletores.
 
 Só entram alimentos da categoria do seletor. Registro inválido fica de fora da lista e, em desenvolvimento, gera aviso no console.
+
+## Calcule sua dieta
+
+O questionário em `/:pessoa/calcular-dieta` estima energia e macros com a política `experimental-v1` (Mifflin–St Jeor, fatores de atividade, multiplicadores de objetivo e pisos/teto dessa política). Nada disso é prescrição. A proposta só entra no perfil quando a pessoa escolhe “Aplicar ao meu perfil”. Cancelar deixa o plano ativo como está.
+
+Quem ainda não confirmou o questionário continua no modo legado: as porções seguem o cálculo calórico do cardápio, inclusive a segunda proteína opcional no café e no almoço, que divide a fatia de energia da proteína. Esse modo não é otimização de macros. Um alimento sem macro conhecido, como a maçã sem gordura, continua usável nesse cálculo e fica de fora da otimização.
+
+A primeira visita copia o diário antigo (`meal-guide:v1:log:`) para o envelope `meal-guide:v2:profile:<pessoa>`. A cópia é idempotente, não apaga as chaves v1 e marca a conclusão em `meal-guide:v2:migration:<pessoa>`. O plano reconstruído tem origem `legacy_inferred`, sem idade, peso ou altura inventados. O rascunho do questionário fica numa chave separada, por pessoa.
+
+Com plano confirmado, o café e o almoço podem usar o solver de macros. As outras refeições seguem com um carboidrato opcional extra e uma proteína. A URL antiga, sem `protein2`, continua válida. Um item fora da categoria, da refeição ou da restrição não é selecionado.
+
+O diário v2 grava os nutrientes no momento do registro. Uma edição posterior do catálogo não reescreve o que já foi lançado. Refeições sem lançamento recebem o saldo do dia; uma refeição com qualquer lançamento sai da redistribuição até o último registro sair. Se a meta de energia do dia já foi atingida ou ultrapassada, o montador não sugere porção zero nem pede para pular a refeição: o registro manual continua no diário.
+
+Os interruptores em `src/diet/flags.ts` desligam o questionário, o solver de macros ou a tela v2 do diário sem remover o leitor do envelope. Os três começam ligados. O app não envia respostas do questionário para lugar nenhum: elas ficam só no dispositivo.
