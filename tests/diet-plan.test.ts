@@ -97,6 +97,7 @@ test("metas das refeições somam a meta diária e usam o mesmo peso", () => {
   const plan: DietPlan = {
     id: "proposta-1",
     personKey: "felipe",
+    origin: "confirmed",
     policyId: proposal.policyId,
     assessment: assessment(),
     catalogVersion: "test",
@@ -178,6 +179,7 @@ test("validateDietPlan recusa plano incoerente ou com refeições incompletas", 
   const valid: DietPlan = {
     id: "proposta-2",
     personKey: "felipe",
+    origin: "confirmed",
     policyId: "experimental-v1",
     assessment: assessment(),
     catalogVersion: "test",
