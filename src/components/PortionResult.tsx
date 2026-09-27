@@ -45,20 +45,29 @@ export function PortionResult({
   carbohydrate,
   secondCarbohydrate,
   protein,
+  secondProtein = null,
+  statusLabel = null,
 }: {
   result: PortionCalculationResult;
   carbohydrate: Food;
   secondCarbohydrate: Food | null;
   protein: Food;
+  secondProtein?: Food | null;
+  statusLabel?: string | null;
 }) {
-  const foods = secondCarbohydrate
-    ? [carbohydrate, secondCarbohydrate, protein]
-    : [carbohydrate, protein];
-  const items =
+  const pairs = [
+    { item: result.carbohydrate, food: carbohydrate },
     result.secondCarbohydrate && secondCarbohydrate
-      ? [result.carbohydrate, result.secondCarbohydrate, result.protein]
-      : [result.carbohydrate, result.protein];
-  const within = result.toleranceStatus === "within";
+      ? { item: result.secondCarbohydrate, food: secondCarbohydrate }
+      : null,
+    { item: result.protein, food: protein },
+    result.secondProtein && secondProtein
+      ? { item: result.secondProtein, food: secondProtein }
+      : null,
+  ].filter((pair): pair is { item: PortionResultItem; food: Food } => pair !== null && pair.item.grams > 0);
+  const foods = pairs.map((pair) => pair.food);
+  const items = pairs.map((pair) => pair.item);
+  const within = statusLabel ? statusLabel === "Combinação dentro das metas calculadas" : result.toleranceStatus === "within";
   return (
     <section className="grid gap-4 rounded-card bg-guide-card p-5 shadow-card">
       {items.map((item, index) => (
@@ -80,7 +89,7 @@ export function PortionResult({
             within ? "text-guide-success" : "text-guide-danger"
           }`}
         >
-          {formatMargin(result)}
+          {statusLabel ?? formatMargin(result)}
         </p>
       </div>
       <DataSourceNotice foods={foods} />

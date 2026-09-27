@@ -19,18 +19,33 @@ import {
 import { fetchRemoteCatalog } from "./catalog/remote.ts";
 import { adjustedMeals } from "./domain/day-log.ts";
 import type { Person } from "./domain/types.ts";
+import { DietProvider, useDiet } from "./diet/DietContext.tsx";
+import { dietFlags } from "./diet/flags.ts";
+import { CalculateDietPage } from "./pages/CalculateDietPage.tsx";
 import { DiaryPage } from "./pages/DiaryPage.tsx";
 import { HomePage } from "./pages/HomePage.tsx";
 import { MealBuilderPage } from "./pages/MealBuilderPage.tsx";
+import { MyDietPage } from "./pages/MyDietPage.tsx";
 import "./style.css";
 
 function AdjustedOutlet({ person }: { person: Person }) {
   const { consumedByMeal } = useLog();
-  const adjusted = useMemo<Person>(
-    () => ({ ...person, meals: adjustedMeals(person.meals, consumedByMeal) }),
-    [person, consumedByMeal],
-  );
+  const diet = useDiet();
+  const adjusted = useMemo<Person>(() => {
+    if (dietFlags.diaryV2) return { ...person, meals: diet.operationalMeals };
+    return { ...person, meals: adjustedMeals(person.meals, consumedByMeal) };
+  }, [person, consumedByMeal, diet.operationalMeals]);
   return <Outlet context={adjusted} />;
+}
+
+function DietNotice() {
+  const { notice } = useDiet();
+  if (!notice) return null;
+  return (
+    <p className="mx-auto w-full max-w-md px-5 pt-2 text-sm text-guide-danger" role="status">
+      {notice}
+    </p>
+  );
 }
 
 function PersonLayout() {
@@ -39,11 +54,14 @@ function PersonLayout() {
   const person = persons.find((option) => option.key === personKey) ?? null;
   if (!person) return <DefaultRedirect />;
   return (
-    <LogProvider person={person}>
-      <PersonBar person={person} />
-      <AdjustedOutlet person={person} />
-      <TabBar person={person} />
-    </LogProvider>
+    <DietProvider key={person.key} person={person}>
+      <LogProvider person={person}>
+        <PersonBar person={person} />
+        <DietNotice />
+        <AdjustedOutlet person={person} />
+        <TabBar person={person} />
+      </LogProvider>
+    </DietProvider>
   );
 }
 
@@ -81,6 +99,8 @@ async function bootstrap() {
               <Route index element={<HomePage />} />
               <Route path="refeicoes/:mealKey" element={<MealBuilderPage />} />
               <Route path="diario" element={<DiaryPage />} />
+              <Route path="calcular-dieta" element={<CalculateDietPage />} />
+              <Route path="minha-dieta" element={<MyDietPage />} />
             </Route>
             <Route path="*" element={<DefaultRedirect />} />
           </Routes>
