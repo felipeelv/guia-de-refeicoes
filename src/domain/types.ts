@@ -29,6 +29,42 @@ export interface Person {
 
 export type FoodCategory = "carbohydrate" | "protein";
 
+export type CarbohydrateBasis =
+  | "available"
+  | "total_including_fiber"
+  | "unspecified";
+
+/**
+ * present: a restrição está no alimento.
+ * verified_absent: a fonte declara ausência.
+ * unknown: não há confirmação. Não é compatível e não é ausência.
+ */
+export type RestrictionKnowledge = "present" | "verified_absent" | "unknown";
+
+/** Restrições que o catálogo sabe consultar. Não cobre contaminação cruzada. */
+export const SUPPORTED_RESTRICTIONS = [
+  "gluten",
+  "milk",
+  "lactose",
+  "egg",
+  "fish",
+  "tree_nut",
+] as const;
+
+export type SupportedRestriction = (typeof SUPPORTED_RESTRICTIONS)[number];
+
+/**
+ * Limites da busca do protótipo, por alimento.
+ * Não são porção recomendada nem máximo clínico.
+ * step null usa o incremento de gramas do perfil.
+ * Em alimento com unidade, minimum, maximum e step são em unidades.
+ */
+export interface FoodPortionBounds {
+  minimum: number;
+  maximum: number;
+  step: number | null;
+}
+
 export interface FoodUnit {
   singular: string;
   plural: string;
@@ -55,6 +91,23 @@ export interface Food {
   proteinPer100g: number | null;
   carbohydratePer100g: number | null;
   fatPer100g: number | null;
+  /**
+   * Base do número já gravado em carbohydratePer100g.
+   * Não presume que o campo antigo seja carboidrato disponível.
+   * Ausente equivale a unspecified.
+   */
+  carbohydrateBasis?: CarbohydrateBasis;
+  /** Da mesma ficha, quando a fonte informa número finito. Não substitui o campo antigo. */
+  availableCarbohydratePer100g?: number | null;
+  totalCarbohydratePer100g?: number | null;
+  /** Null quando a fibra não foi analisada. Não equivale a zero. */
+  fiberPer100g?: number | null;
+  portionBounds?: FoodPortionBounds;
+  /**
+   * Conhecimento por restrição suportada.
+   * Chave ausente é desconhecido, não ausência verificada.
+   */
+  restrictions?: Partial<Record<SupportedRestriction, RestrictionKnowledge>>;
   source: FoodSource;
   active: boolean;
   sortOrder: number;
@@ -190,11 +243,6 @@ export interface PlanActivation {
   status: PlanActivationStatus;
   createdAt: string;
 }
-
-export type CarbohydrateBasis =
-  | "available"
-  | "total_including_fiber"
-  | "unspecified";
 
 /** null continua desconhecido e não equivale a zero. */
 export interface FoodNutritionV2 {
