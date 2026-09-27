@@ -43,7 +43,7 @@ test("altura em metros pede conferência em centímetros e a vírgula decimal en
   page,
 }) => {
   await openQuestionnaire(page, "kelly");
-  await page.getByRole("radio", { name: "metros" }).check();
+  await page.getByRole("radio", { name: "metros", exact: true }).check();
   await page.getByLabel("Valor da altura").fill("1,62");
   await expect(page.getByText("Altura para conferência: 162 cm")).toBeVisible();
 });
