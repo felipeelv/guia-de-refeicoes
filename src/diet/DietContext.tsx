@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { useCatalog } from "../catalog/context.tsx";
+import { libraryFoods } from "../catalog/library.ts";
 import type {
   DietPlan,
   Food,
@@ -64,6 +65,8 @@ export interface DietValue extends DayView {
   confirmProposal: (plan: DietPlan) => { result: PlanActivationResult; persisted: boolean } | null;
   cancelScheduled: (activationId: string) => boolean;
   restorePlan: (planId: string) => { result: PlanActivationResult; persisted: boolean } | null;
+  saveLibraryFood: (foodId: string) => boolean;
+  removeLibraryFood: (foodId: string) => boolean;
 }
 
 const DietContext = createContext<DietValue | null>(null);
@@ -298,6 +301,28 @@ export function DietProvider({ person, children }: { person: Person; children: R
     [persist, profile],
   );
 
+  const saveLibraryFood = useCallback(
+    (foodId: string): boolean => {
+      if (!libraryFoods.some((food) => food.id === foodId)) return false;
+      const current = profile.savedFoodIds ?? [];
+      if (current.includes(foodId)) return true;
+      return persist({ ...profile, savedFoodIds: [...current, foodId] });
+    },
+    [persist, profile],
+  );
+
+  const removeLibraryFood = useCallback(
+    (foodId: string): boolean => {
+      const current = profile.savedFoodIds ?? [];
+      if (!current.includes(foodId)) return true;
+      return persist({
+        ...profile,
+        savedFoodIds: current.filter((id) => id !== foodId),
+      });
+    },
+    [persist, profile],
+  );
+
   const restorePlan = useCallback(
     (planId: string) => {
       const result = restorePlanActivation(
@@ -330,6 +355,8 @@ export function DietProvider({ person, children }: { person: Person; children: R
       confirmProposal,
       cancelScheduled,
       restorePlan,
+      saveLibraryFood,
+      removeLibraryFood,
     }),
     [
       addBatch,
@@ -340,7 +367,9 @@ export function DietProvider({ person, children }: { person: Person; children: R
       person.key,
       profile,
       removeEntry,
+      removeLibraryFood,
       restorePlan,
+      saveLibraryFood,
       today,
       updateEntryGrams,
       view,

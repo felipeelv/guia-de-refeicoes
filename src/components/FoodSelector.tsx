@@ -57,54 +57,32 @@ export function FoodSelector({
   legend,
   name,
   foods,
-  selectedId,
-  onChange,
-  noneLabel,
-  action,
+  selectedIds,
+  max,
+  onToggle,
 }: {
   legend: string;
   name: string;
   foods: Food[];
-  selectedId: string | null;
-  onChange: (id: string | null) => void;
-  noneLabel?: string;
-  action?: ReactNode;
+  selectedIds: readonly string[];
+  max: number;
+  onToggle: (id: string) => void;
 }) {
   const inputClass =
     "peer absolute top-3 right-3 size-5 cursor-pointer appearance-none rounded-full";
   const legendId = useId();
+  const atCapacity = selectedIds.length >= max;
   return (
     <div role="group" aria-labelledby={legendId}>
       <div className="mb-3 flex min-h-6 items-center justify-between gap-3">
-        <span
-          id={legendId}
-          className="text-lg font-medium text-guide-ink"
-        >
+        <span id={legendId} className="text-lg font-medium text-guide-ink">
           {legend}
         </span>
-        {action}
       </div>
       <div className="grid grid-cols-2 gap-2">
-        {noneLabel ? (
-          <Tile
-            selected={selectedId === null}
-            className="col-span-2 min-h-12 justify-center"
-            input={
-              <input
-                type="radio"
-                name={name}
-                value=""
-                checked={selectedId === null}
-                onChange={() => onChange(null)}
-                className={inputClass}
-              />
-            }
-          >
-            <span className="font-medium text-guide-ink">{noneLabel}</span>
-          </Tile>
-        ) : null}
         {foods.map((food) => {
-          const selected = selectedId === food.id;
+          const order = selectedIds.indexOf(food.id);
+          const selected = order >= 0;
           return (
             <Tile
               key={food.id}
@@ -112,16 +90,27 @@ export function FoodSelector({
               className="min-h-20"
               input={
                 <input
-                  type="radio"
+                  type="checkbox"
                   name={name}
                   value={food.id}
                   checked={selected}
-                  onChange={() => onChange(food.id)}
+                  onClick={(event) => {
+                    if (!selected && atCapacity) event.preventDefault();
+                  }}
+                  onChange={() => {
+                    if (!selected && atCapacity) return;
+                    onToggle(food.id);
+                  }}
                   className={inputClass}
                 />
               }
             >
-              <span className="leading-tight font-medium text-pretty text-guide-ink">{food.name}</span>
+              <span className="leading-tight font-medium text-pretty text-guide-ink">
+                {food.name}
+              </span>
+              {selected && max > 1 ? (
+                <span className="sr-only">{order === 0 ? "primeiro" : "segundo"}</span>
+              ) : null}
               <span className="line-clamp-2 text-xs leading-snug text-guide-muted">
                 {food.preparation}
               </span>

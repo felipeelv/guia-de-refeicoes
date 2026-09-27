@@ -34,6 +34,7 @@ const ACTIVATION_STATUSES = new Set([
 ]);
 const PLAN_ORIGINS = new Set(["confirmed", "legacy_inferred"]);
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+const FOOD_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const DATE_PARTS = new Intl.DateTimeFormat("en-US", {
   timeZone: "America/Sao_Paulo",
@@ -84,6 +85,7 @@ export function emptyProfile(personKey: PersonKey): ProfileStoreV2 {
     plans: [],
     activations: [],
     days: [],
+    savedFoodIds: [],
   };
 }
 
@@ -161,6 +163,24 @@ export function validateProfileStore(value: unknown): Diagnostic[] {
   const personKey = value.personKey as PersonKey;
   if (!Number.isInteger(value.revision) || (value.revision as number) < 0) {
     diagnostics.push(issue("revision precisa ser um inteiro >= 0."));
+  }
+  if ("savedFoodIds" in value && value.savedFoodIds !== undefined) {
+    if (!Array.isArray(value.savedFoodIds)) {
+      diagnostics.push(issue("savedFoodIds precisa ser uma lista."));
+    } else {
+      const seen = new Set<string>();
+      for (const id of value.savedFoodIds) {
+        if (typeof id !== "string" || !FOOD_ID.test(id)) {
+          diagnostics.push(issue("savedFoodIds contém id inválido."));
+          break;
+        }
+        if (seen.has(id)) {
+          diagnostics.push(issue(`Alimento salvo repetido: ${id}.`));
+          break;
+        }
+        seen.add(id);
+      }
+    }
   }
   if (value.draftAssessment !== null) {
     validateAssessment(value.draftAssessment, personKey, "Rascunho", diagnostics);
@@ -317,7 +337,12 @@ export function loadProfile(storage: ProfileStorage, personKey: PersonKey): Load
     const parsed: unknown = JSON.parse(raw);
     const diagnostics = validateProfileStore(parsed);
     if (diagnostics.length > 0) return { ok: false, reason: "invalid", diagnostics };
-    return { ok: true, profile: parsed as ProfileStoreV2 };
+    const stored = parsed as ProfileStoreV2;
+    const rawIds = (parsed as { savedFoodIds?: unknown }).savedFoodIds;
+    const savedFoodIds = Array.isArray(rawIds)
+      ? rawIds.filter((item): item is string => typeof item === "string")
+      : [];
+    return { ok: true, profile: { ...stored, savedFoodIds } };
   } catch {
     return {
       ok: false,

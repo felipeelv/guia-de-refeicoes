@@ -9,7 +9,7 @@ test("o modo legado não se apresenta como otimização de macros", async ({ pag
   await expect(live).toContainText("Porções dentro da margem");
   await expect(live).not.toContainText("Combinação dentro das metas calculadas");
   await expect(live).not.toContainText("kcal");
-  await expect(page.getByRole("button", { name: "Adicionar outra proteína" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Adicionar outra proteína" })).toHaveCount(0);
   await expect(page.getByRole("group", { name: "Segunda proteína (opcional)" })).toHaveCount(0);
 });
 
@@ -17,11 +17,16 @@ test("café e almoço aceitam segunda proteína e o mesmo alimento não ocupa do
   page,
 }) => {
   await page.goto("/felipe/refeicoes/breakfast?carb=pao-frances&protein=ovo");
-  await page.getByRole("button", { name: "Adicionar outra proteína" }).click();
-  const second = page.getByRole("group", { name: "Segunda proteína (opcional)" });
-  await expect(second.getByRole("radio", { name: /Ovo/ })).toHaveCount(0);
-  await second.getByRole("radio", { name: /Iogurte natural/ }).click();
+  await expect(page.getByRole("button", { name: "Adicionar outra proteína" })).toHaveCount(0);
+  const proteins = page.getByRole("group", { name: "Proteína", exact: true });
+  const egg = proteins.getByRole("checkbox", { name: /Ovo/ });
+  await expect(egg).toBeChecked();
+  await proteins.getByRole("checkbox", { name: /Iogurte natural/ }).click();
+  await expect(egg).toBeChecked();
   await expect(page).toHaveURL(/protein2=iogurte-natural/);
+  await proteins.getByRole("checkbox", { name: /Leite integral/ }).click();
+  await expect(page).not.toHaveURL(/leite-integral/);
+  await expect(proteins.getByRole("checkbox", { name: /Leite integral/ })).not.toBeChecked();
   const live = page.locator("[aria-live='polite']");
   await expect(live).toContainText("Iogurte natural");
   await expect(live).toContainText("Porções dentro da margem");
@@ -38,8 +43,8 @@ test("jantar ignora protein2 e uma URL inválida não seleciona o alimento", asy
   await expect(live).not.toContainText("Ovo");
 
   await page.goto("/felipe/refeicoes/lunch?carb=peito-de-frango&protein=arroz-branco");
-  await expect(page.getByRole("group", { name: "Carboidrato", exact: true }).getByRole("radio", { checked: true })).toHaveCount(0);
-  await expect(page.getByRole("group", { name: "Proteína", exact: true }).getByRole("radio", { checked: true })).toHaveCount(0);
+  await expect(page.getByRole("group", { name: "Carboidrato", exact: true }).getByRole("checkbox", { checked: true })).toHaveCount(0);
+  await expect(page.getByRole("group", { name: "Proteína", exact: true }).getByRole("checkbox", { checked: true })).toHaveCount(0);
   await expect(page.getByText("Escolha um carboidrato e uma proteína.")).toBeVisible();
 });
 
@@ -49,9 +54,9 @@ test("alergia a glúten tira o macarrão da sugestão e da URL", async ({ page }
   await page.getByRole("button", { name: "Aplicar ao meu perfil" }).click();
   await expect(page.getByText(/Plano em vigor hoje/)).toBeVisible();
   await page.goto("/gabriela/refeicoes/lunch?carb=macarrao&protein=peito-de-frango");
-  await expect(page.getByRole("radio", { name: /Macarrão/ })).toHaveCount(0);
+  await expect(page.getByRole("checkbox", { name: /Macarrão/ })).toHaveCount(0);
   await expect(
-    page.getByRole("group", { name: "Carboidrato", exact: true }).getByRole("radio", { checked: true }),
+    page.getByRole("group", { name: "Carboidrato", exact: true }).getByRole("checkbox", { checked: true }),
   ).toHaveCount(0);
 });
 

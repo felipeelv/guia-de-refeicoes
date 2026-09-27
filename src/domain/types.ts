@@ -404,6 +404,11 @@ export interface ProfileStoreV2 {
   plans: readonly DietPlan[];
   activations: readonly PlanActivation[];
   days: readonly ProfileDayState[];
+  /**
+   * Ids da biblioteca extra salvos só para esta pessoa.
+   * Envelope antigo sem o campo vale lista vazia.
+   */
+  savedFoodIds: readonly string[];
 }
 
 /** Resultado de estimateEnergy. GER e TDEE permanecem sem arredondamento. */
