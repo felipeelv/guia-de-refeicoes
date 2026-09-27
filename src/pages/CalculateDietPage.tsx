@@ -81,12 +81,27 @@ function toggleId(list: readonly string[], id: string): string[] {
   return list.includes(id) ? list.filter((item) => item !== id) : [...list, id];
 }
 
+function entryInvalid(
+  issues: readonly { field: string; code: string }[],
+  field: string,
+): boolean {
+  return issues.some((item) => item.field === field && item.code !== "required");
+}
+
+function percentEntryInvalid(raw: string): boolean {
+  if (raw.trim() === "") return false;
+  const value = parseBrazilianDecimal(raw);
+  return !Number.isFinite(value) || value <= 0;
+}
+
 const primaryButton =
   "inline-flex min-h-[50px] cursor-pointer items-center justify-center rounded-card border-0 bg-guide-primary px-4 font-bold text-white no-underline hover:bg-guide-primary-hover disabled:cursor-default disabled:opacity-40";
 const quietButton =
   "inline-flex min-h-[50px] cursor-pointer items-center justify-center rounded-card border-0 bg-guide-card px-4 font-medium text-guide-ink no-underline shadow-card";
+// O fundo da página é o mesmo paper do campo. border-0 faz o controle sumir.
+// O diário mantém o poço sem borda de propósito, dentro do cartão branco.
 const fieldClass =
-  "min-h-[50px] w-full rounded-card border-0 bg-guide-paper px-4 font-sans text-base text-guide-ink";
+  "box-border min-h-[50px] w-full rounded-card border-2 border-solid border-guide-muted bg-guide-paper px-4 py-3 font-sans text-base text-guide-ink ring-offset-2 ring-offset-guide-paper focus-visible:border-guide-focus focus-visible:ring-2 focus-visible:ring-guide-focus aria-invalid:border-[3px] aria-invalid:border-guide-danger aria-invalid:ring-2 aria-invalid:ring-guide-danger";
 
 export function CalculateDietPage() {
   const adjusted = useOutletContext<Person>();
@@ -203,6 +218,7 @@ export function CalculateDietPage() {
               inputMode="numeric"
               value={form.ageYears}
               onChange={(event) => update({ ageYears: event.target.value })}
+              aria-invalid={entryInvalid(validation.issues, "ageYears") || undefined}
               className={fieldClass}
             />
           </label>
@@ -229,6 +245,7 @@ export function CalculateDietPage() {
               value={form.height}
               onChange={(event) => update({ height: event.target.value })}
               aria-label="Valor da altura"
+              aria-invalid={entryInvalid(validation.issues, "height") || undefined}
               className={fieldClass}
             />
             {showHeightReview ? (
@@ -243,6 +260,7 @@ export function CalculateDietPage() {
               inputMode="decimal"
               value={form.weightKg}
               onChange={(event) => update({ weightKg: event.target.value })}
+              aria-invalid={entryInvalid(validation.issues, "weightKg") || undefined}
               className={fieldClass}
             />
           </label>
@@ -307,6 +325,7 @@ export function CalculateDietPage() {
               inputMode="decimal"
               value={form.desiredWeightKg}
               onChange={(event) => update({ desiredWeightKg: event.target.value })}
+              aria-invalid={entryInvalid(validation.issues, "desiredWeightKg") || undefined}
               className={fieldClass}
             />
           </label>
@@ -404,6 +423,7 @@ export function CalculateDietPage() {
             <textarea
               value={form.freeTextNote}
               onChange={(event) => update({ freeTextNote: event.target.value })}
+              aria-invalid={entryInvalid(validation.issues, "freeTextNote") || undefined}
               className={`${fieldClass} min-h-24 py-3`}
             />
           </label>
@@ -429,6 +449,7 @@ export function CalculateDietPage() {
                     },
                   })
                 }
+                aria-invalid={percentEntryInvalid(form.mealPercents[meal.key]) || undefined}
                 className={fieldClass}
               />
             </label>
