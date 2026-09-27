@@ -211,10 +211,17 @@ export interface MealNutritionTarget extends NutritionTargets {
   share: number;
 }
 
+/**
+ * confirmed: questionário confirmado.
+ * legacy_inferred: meta calórica antiga reconstruída, sem biometria nem macros inventados.
+ */
+export type DietPlanOrigin = "confirmed" | "legacy_inferred";
+
 /** Plano confirmado. Não é reescrito depois da confirmação. */
 export interface DietPlan {
   id: string;
   personKey: PersonKey;
+  origin: DietPlanOrigin;
   policyId: CalculationPolicyId;
   assessment: DietAssessment;
   catalogVersion: string;
