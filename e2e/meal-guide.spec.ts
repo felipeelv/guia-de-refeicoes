@@ -50,7 +50,7 @@ test("consulta porções do almoço do Felipe e recalcula ao trocar o alimento",
   await expect(page).toHaveURL(/\/felipe\/refeicoes\/lunch$/);
   await expect(page.getByRole("heading", { name: "Almoço" })).toBeVisible();
   await expect(page.getByText("Cardápio de Felipe")).toBeVisible();
-  await expect(page.locator('input:not([type="radio"])')).toHaveCount(0);
+  await expect(page.locator('input:not([type="checkbox"])')).toHaveCount(0);
   await expect(page.getByRole("spinbutton")).toHaveCount(0);
 
   const carbohydrates = page.getByRole("group", {
@@ -58,21 +58,20 @@ test("consulta porções do almoço do Felipe e recalcula ao trocar o alimento",
     exact: true,
   });
   const proteins = page.getByRole("group", { name: "Proteína" });
-  const addSecond = page.getByRole("button", {
-    name: "Adicionar segundo carboidrato",
-  });
-  await expect(carbohydrates.getByRole("radio")).toHaveCount(8);
-  await expect(proteins.getByRole("radio")).toHaveCount(7);
+  await expect(carbohydrates.getByRole("checkbox")).toHaveCount(8);
+  await expect(proteins.getByRole("checkbox")).toHaveCount(7);
   await expect(
-    carbohydrates.getByRole("radio", { name: /Feijão carioca/ }),
+    carbohydrates.getByRole("checkbox", { name: /Feijão carioca/ }),
   ).toHaveCount(1);
   await expect(
-    carbohydrates.getByRole("radio", { name: /Peito de frango/ }),
+    carbohydrates.getByRole("checkbox", { name: /Peito de frango/ }),
   ).toHaveCount(0);
   await expect(
-    proteins.getByRole("radio", { name: /Arroz branco/ }),
+    proteins.getByRole("checkbox", { name: /Arroz branco/ }),
   ).toHaveCount(0);
-  await expect(addSecond).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Adicionar segundo carboidrato" }),
+  ).toHaveCount(0);
   await expect(
     page.getByRole("group", { name: "Segundo carboidrato (opcional)" }),
   ).toHaveCount(0);
@@ -80,13 +79,13 @@ test("consulta porções do almoço do Felipe e recalcula ao trocar o alimento",
   await expect(page.getByText("dentro da margem")).toHaveCount(0);
   await expect(page.getByText("cozido, sem óleo, sem sal").first()).toBeVisible();
 
-  await carbohydrates.getByRole("radio", { name: /Arroz branco/ }).click();
+  await carbohydrates.getByRole("checkbox", { name: /Arroz branco/ }).click();
   await expect(
-    carbohydrates.getByRole("radio", { name: /Arroz branco/ }),
+    carbohydrates.getByRole("checkbox", { name: /Arroz branco/ }),
   ).toBeChecked();
   await expect(page).toHaveURL(/carb=arroz-branco/);
   await expect(page.getByText("Agora escolha a proteína.")).toBeVisible();
-  await proteins.getByRole("radio", { name: /Peito de frango/ }).click();
+  await proteins.getByRole("checkbox", { name: /Peito de frango/ }).click();
   await expect(page).toHaveURL(/protein=peito-de-frango/);
 
   const live = page.locator("[aria-live='polite']");
@@ -105,10 +104,10 @@ test("consulta porções do almoço do Felipe e recalcula ao trocar o alimento",
   ).toHaveCount(0);
   await expect(page.locator("[aria-current='step']")).toHaveText(/Porção/);
 
-  await carbohydrates.getByRole("radio", { name: /Arroz branco/ }).focus();
-  await page.keyboard.press("ArrowDown");
-  await page.keyboard.press("ArrowDown");
+  await carbohydrates.getByRole("checkbox", { name: /Arroz branco/ }).click();
+  await carbohydrates.getByRole("checkbox", { name: /Feijão carioca/ }).click();
   await expect(page).toHaveURL(/carb=feijao-carioca/);
+  await expect(page).not.toHaveURL(/carb2=/);
   await expect(live).toContainText("310 g");
   await expect(live).toContainText("Porções dentro da margem");
   await expect(live).not.toContainText("170 g");
@@ -131,25 +130,25 @@ test("arroz com feijão abre o segundo carboidrato e divide a porção", async (
   const live = page.locator("[aria-live='polite']");
   await expect(live).toContainText("170 g");
 
-  await page
-    .getByRole("button", { name: "Adicionar segundo carboidrato" })
-    .click();
-  const extraCarbohydrates = page.getByRole("group", {
-    name: "Segundo carboidrato (opcional)",
+  await expect(
+    page.getByRole("button", { name: "Adicionar segundo carboidrato" }),
+  ).toHaveCount(0);
+  const carbohydrates = page.getByRole("group", {
+    name: "Carboidrato",
+    exact: true,
   });
   await expect(
-    extraCarbohydrates.getByRole("radio", { name: "Sem segundo carboidrato" }),
+    carbohydrates.getByRole("checkbox", { name: /Arroz branco/ }),
   ).toBeChecked();
-  await expect(
-    extraCarbohydrates.getByRole("radio", { name: /Arroz branco/ }),
-  ).toHaveCount(0);
-  await expect(extraCarbohydrates.getByRole("radio")).toHaveCount(8);
 
-  const beans = extraCarbohydrates.getByRole("radio", {
+  const beans = carbohydrates.getByRole("checkbox", {
     name: /Feijão carioca/,
   });
   await beans.click();
   await expect(beans).toBeChecked();
+  await expect(
+    carbohydrates.getByRole("checkbox", { name: /Arroz branco/ }),
+  ).toBeChecked();
   await expect(page).toHaveURL(/carb2=feijao-carioca/);
   await expect(live).toContainText("80 g");
   await expect(live).toContainText("150 g");
@@ -161,12 +160,9 @@ test("arroz com feijão abre o segundo carboidrato e divide a porção", async (
   await expect(live).not.toContainText("NaN");
   await expectNoOverflow(page);
 
-  await page.getByRole("button", { name: "Remover" }).click();
+  await beans.click();
   await expect(page).not.toHaveURL(/carb2=/);
-  await expect(extraCarbohydrates).toHaveCount(0);
-  await expect(
-    page.getByRole("button", { name: "Adicionar segundo carboidrato" }),
-  ).toBeVisible();
+  await expect(beans).not.toBeChecked();
   await expect(live).toContainText("170 g");
   await expect(live).not.toContainText("150 g");
   expect(consoleErrors).toEqual([]);
@@ -184,18 +180,18 @@ test("o dropdown troca de pessoa mantendo a refeição e libera fruta só para a
   });
   const proteins = page.getByRole("group", { name: "Proteína" });
   await expect(page.getByText("Cardápio de Felipe")).toBeVisible();
-  await expect(carbohydrates.getByRole("radio")).toHaveCount(3);
-  await expect(carbohydrates.getByRole("radio", { name: /Banana/ })).toHaveCount(0);
-  await expect(carbohydrates.getByRole("radio", { name: /Mamão/ })).toHaveCount(0);
+  await expect(carbohydrates.getByRole("checkbox")).toHaveCount(3);
+  await expect(carbohydrates.getByRole("checkbox", { name: /Banana/ })).toHaveCount(0);
+  await expect(carbohydrates.getByRole("checkbox", { name: /Mamão/ })).toHaveCount(0);
 
   await page.getByRole("combobox", { name: "Pessoa" }).selectOption("gabriela");
   await expect(page).toHaveURL(/\/gabriela\/refeicoes\/breakfast$/);
   await expect(page.getByText("Cardápio de Ana Gabriela")).toBeVisible();
-  await expect(carbohydrates.getByRole("radio")).toHaveCount(5);
-  await expect(carbohydrates.getByRole("radio", { name: /Banana/ })).toHaveCount(1);
+  await expect(carbohydrates.getByRole("checkbox")).toHaveCount(5);
+  await expect(carbohydrates.getByRole("checkbox", { name: /Banana/ })).toHaveCount(1);
 
-  await carbohydrates.getByRole("radio", { name: /Banana/ }).click();
-  await proteins.getByRole("radio", { name: /Iogurte natural/ }).click();
+  await carbohydrates.getByRole("checkbox", { name: /Banana/ }).click();
+  await proteins.getByRole("checkbox", { name: /Iogurte natural/ }).click();
   const live = page.locator("[aria-live='polite']");
   await expect(live).toContainText("90 g");
   await expect(live).toContainText("255 g");
@@ -208,9 +204,9 @@ test("o dropdown troca de pessoa mantendo a refeição e libera fruta só para a
     /\/felipe\/refeicoes\/breakfast\?carb=banana&protein=iogurte-natural$/,
   );
   await expect(page.getByText("Cardápio de Felipe")).toBeVisible();
-  await expect(carbohydrates.getByRole("radio", { name: /Banana/ })).toHaveCount(0);
+  await expect(carbohydrates.getByRole("checkbox", { name: /Banana/ })).toHaveCount(0);
   await expect(
-    proteins.getByRole("radio", { name: /Iogurte natural/ }),
+    proteins.getByRole("checkbox", { name: /Iogurte natural/ }),
   ).toBeChecked();
   await expect(page.getByText("Agora escolha o carboidrato.")).toBeVisible();
   await expect(live).not.toContainText("dentro da margem");
@@ -238,13 +234,13 @@ test("a ceia tem carboidrato sem fruta para o Felipe e usa 5 g para a Gabriela",
     name: "Carboidrato",
     exact: true,
   });
-  await expect(carbohydrates.getByRole("radio")).toHaveCount(2);
-  await expect(carbohydrates.getByRole("radio", { name: /Aveia/ })).toHaveCount(1);
-  await expect(carbohydrates.getByRole("radio", { name: /Tapioca/ })).toHaveCount(1);
-  await expect(carbohydrates.getByRole("radio", { name: /Banana/ })).toHaveCount(0);
-  await carbohydrates.getByRole("radio", { name: /Aveia/ }).click();
+  await expect(carbohydrates.getByRole("checkbox")).toHaveCount(2);
+  await expect(carbohydrates.getByRole("checkbox", { name: /Aveia/ })).toHaveCount(1);
+  await expect(carbohydrates.getByRole("checkbox", { name: /Tapioca/ })).toHaveCount(1);
+  await expect(carbohydrates.getByRole("checkbox", { name: /Banana/ })).toHaveCount(0);
+  await carbohydrates.getByRole("checkbox", { name: /Aveia/ }).click();
   await page.getByRole("group", { name: "Proteína" })
-    .getByRole("radio", { name: /Iogurte natural/ })
+    .getByRole("checkbox", { name: /Iogurte natural/ })
     .click();
   const live = page.locator("[aria-live='polite']");
   await expect(live).toContainText("20 g");
@@ -319,7 +315,8 @@ test("o ovo e o pão vêm em unidades, com as gramas como detalhe", async ({
   await expect(live).toContainText("100 g");
 
   const proteins = page.getByRole("group", { name: "Proteína" });
-  await proteins.getByRole("radio", { name: /Iogurte natural/ }).click();
+  await proteins.getByRole("checkbox", { name: /Ovo/ }).click();
+  await proteins.getByRole("checkbox", { name: /Iogurte natural/ }).click();
   await expect(live).not.toContainText("ovo");
   await expect(live).toContainText("g");
   await expectNoOverflow(page);

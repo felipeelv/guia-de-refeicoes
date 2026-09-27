@@ -12,7 +12,7 @@ import {
   writeDietDraft,
   type DietFormState,
 } from "../src/diet/draft-form.ts";
-import { allowsSecondProtein, resolveMealSelection } from "../src/diet/meal-selection.ts";
+import { allowsSecondProtein, resolveMealSelection, toggleSlot } from "../src/diet/meal-selection.ts";
 import { migrateProfileV1, type MigrationFood } from "../src/diet/migrate-v1.ts";
 import { formatBalance, freezeFromFood } from "../src/diet/nutrient-display.ts";
 import { saoPauloCalendarDate, type ProfileStorage } from "../src/diet/profile-store.ts";
@@ -96,6 +96,26 @@ test("a seleção da URL não fura categoria, duplicata nem segunda proteína fo
   assert.deepEqual(dinner.rejected, ["ovo"]);
   assert.equal(allowsSecondProtein("dinner"), false);
   assert.equal(allowsSecondProtein("lunch"), true);
+});
+
+test("a ordem do toque define o primeiro e o segundo e o terceiro toque não entra", () => {
+  const first = toggleSlot(null, null, "arroz-branco", 2);
+  assert.deepEqual(first, { primary: "arroz-branco", second: null });
+  const second = toggleSlot(first.primary, first.second, "feijao-carioca", 2);
+  assert.deepEqual(second, { primary: "arroz-branco", second: "feijao-carioca" });
+  const third = toggleSlot(second.primary, second.second, "batata-doce", 2);
+  assert.deepEqual(third, { primary: "arroz-branco", second: "feijao-carioca" });
+  const removed = toggleSlot(third.primary, third.second, "arroz-branco", 2);
+  assert.deepEqual(removed, { primary: "feijao-carioca", second: null });
+  const same = toggleSlot("ovo", null, "ovo", 2);
+  assert.deepEqual(same, { primary: null, second: null });
+
+  const breakfastProtein = toggleSlot("ovo", null, "iogurte-natural", 2);
+  assert.deepEqual(breakfastProtein, { primary: "ovo", second: "iogurte-natural" });
+  const snack = toggleSlot("ovo", null, "iogurte-natural", 1);
+  assert.deepEqual(snack, { primary: "ovo", second: null });
+  const snackOff = toggleSlot("ovo", null, "ovo", 1);
+  assert.deepEqual(snackOff, { primary: null, second: null });
 });
 
 test("o solver não transforma gordura desconhecida em zero e usa o carboidrato disponível", () => {

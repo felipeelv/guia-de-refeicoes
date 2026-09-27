@@ -2,6 +2,7 @@ import { Link, useOutletContext, useParams, useSearchParams } from "react-router
 import { MealBuilderScreen } from "../components/MealBuilder.tsx";
 import { foodsByCategory } from "../catalog/catalog.ts";
 import { useCatalog } from "../catalog/context.tsx";
+import { catalogWithSaved } from "../catalog/library.ts";
 import { mealByKey } from "../catalog/meals.ts";
 import { useOptionalDiet } from "../diet/DietContext.tsx";
 import { dietFlags } from "../diet/flags.ts";
@@ -40,24 +41,25 @@ export function MealBuilderPage() {
     dietFlags.macroSolver && diet?.effective?.origin === "confirmed",
   );
   const assessment = personalized ? (diet?.effective?.assessment ?? null) : null;
+  const availableFoods = catalogWithSaved(foods, diet?.profile.savedFoodIds ?? []);
   const carbohydrates = personalized
     ? foodsForMealSlot({
         category: "carbohydrate",
         mealKey: meal.key,
         person,
-        foods,
+        foods: availableFoods,
         assessment,
       })
-    : foodsByCategory("carbohydrate", meal.key, person.excludedTags, foods);
+    : foodsByCategory("carbohydrate", meal.key, person.excludedTags, availableFoods);
   const proteins = personalized
     ? foodsForMealSlot({
         category: "protein",
         mealKey: meal.key,
         person,
-        foods,
+        foods: availableFoods,
         assessment,
       })
-    : foodsByCategory("protein", meal.key, person.excludedTags, foods);
+    : foodsByCategory("protein", meal.key, person.excludedTags, availableFoods);
   const resolved = resolveMealSelection({
     mealKey: meal.key,
     carb: params.get("carb"),
@@ -68,12 +70,17 @@ export function MealBuilderPage() {
     proteins,
   });
   const currentMeal = meal;
-  function select(key: "carb" | "carb2" | "protein" | "protein2", id: string | null) {
+  function writePair(
+    primaryKey: "carb" | "protein",
+    secondKey: "carb2" | "protein2",
+    primary: string | null,
+    second: string | null,
+  ) {
     const next = new URLSearchParams(params);
-    if (key === "protein2" && !allowsSecondProtein(currentMeal.key)) {
-      next.delete("protein2");
-    } else if (id === null) next.delete(key);
-    else next.set(key, id);
+    if (primary) next.set(primaryKey, primary);
+    else next.delete(primaryKey);
+    if (second) next.set(secondKey, second);
+    else next.delete(secondKey);
     if (!allowsSecondProtein(currentMeal.key)) next.delete("protein2");
     setParams(next, { replace: true });
   }
@@ -87,10 +94,12 @@ export function MealBuilderPage() {
       secondCarbohydrateId={resolved.carbohydrate2Id}
       proteinId={resolved.proteinId}
       secondProteinId={resolved.protein2Id}
-      onCarbohydrateChange={(id) => select("carb", id)}
-      onSecondCarbohydrateChange={(id) => select("carb2", id)}
-      onProteinChange={(id) => select("protein", id)}
-      onSecondProteinChange={(id) => select("protein2", id)}
+      onCarbohydrateSelectionChange={(primary, second) =>
+        writePair("carb", "carb2", primary, second)
+      }
+      onProteinSelectionChange={(primary, second) =>
+        writePair("protein", "protein2", primary, second)
+      }
     />
   );
 }

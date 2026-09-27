@@ -18,7 +18,7 @@ import {
 } from "../diet/copy.ts";
 import { useOptionalDiet } from "../diet/DietContext.tsx";
 import { dietFlags } from "../diet/flags.ts";
-import { allowsSecondProtein } from "../diet/meal-selection.ts";
+import { allowsSecondProtein, toggleSlot } from "../diet/meal-selection.ts";
 import { formatMagnitude, freezeFromFood } from "../diet/nutrient-display.ts";
 import { buildSolveMealInput } from "../diet/solver-input.ts";
 import { CALCULATION_ERROR_MESSAGE, formatPortion } from "../format.ts";
@@ -26,11 +26,6 @@ import { FoodSelector } from "./FoodSelector.tsx";
 import { useOptionalLog } from "./LogContext.tsx";
 import { MEAL_VISUALS } from "./MealVisuals.tsx";
 import { PortionResult } from "./PortionResult.tsx";
-
-export const NO_SECOND_CARBOHYDRATE_LABEL = "Sem segundo carboidrato";
-export const ADD_SECOND_CARBOHYDRATE_LABEL = "Adicionar segundo carboidrato";
-export const ADD_SECOND_PROTEIN_LABEL = "Adicionar outra proteína";
-export const NO_SECOND_PROTEIN_LABEL = "Sem segunda proteína";
 
 function portionSignature(mealKey: string, items: readonly PortionResultItem[]): string {
   return `${mealKey}:${items.map((item) => `${item.foodId}:${item.grams}`).join("|")}`;
@@ -134,10 +129,8 @@ export function MealBuilderScreen({
   secondCarbohydrateId,
   proteinId,
   secondProteinId = null,
-  onCarbohydrateChange,
-  onSecondCarbohydrateChange,
-  onProteinChange,
-  onSecondProteinChange,
+  onCarbohydrateSelectionChange,
+  onProteinSelectionChange,
 }: {
   person: Person;
   meal: MealConfig;
@@ -147,31 +140,28 @@ export function MealBuilderScreen({
   secondCarbohydrateId: string | null;
   proteinId: string | null;
   secondProteinId?: string | null;
-  onCarbohydrateChange: (id: string) => void;
-  onSecondCarbohydrateChange: (id: string | null) => void;
-  onProteinChange: (id: string) => void;
-  onSecondProteinChange?: (id: string | null) => void;
+  onCarbohydrateSelectionChange: (primary: string | null, second: string | null) => void;
+  onProteinSelectionChange: (primary: string | null, second: string | null) => void;
 }) {
   const visual = MEAL_VISUALS[meal.key];
   const carbohydrate =
     carbohydrates.find((food) => food.id === carbohydrateId) ?? null;
   const protein = proteins.find((food) => food.id === proteinId) ?? null;
-  const secondOptions = carbohydrates.filter(
-    (food) => food.id !== carbohydrate?.id,
-  );
   const secondCarbohydrate =
-    secondOptions.find((food) => food.id === secondCarbohydrateId) ?? null;
-  const proteinOptions = proteins.filter((food) => food.id !== protein?.id);
-  const secondProtein =
-    allowsSecondProtein(meal.key)
-      ? (proteinOptions.find((food) => food.id === secondProteinId) ?? null)
+    secondCarbohydrateId && secondCarbohydrateId !== carbohydrate?.id
+      ? (carbohydrates.find((food) => food.id === secondCarbohydrateId) ?? null)
       : null;
-  const [secondRequested, setSecondRequested] = useState(false);
-  const [secondProteinRequested, setSecondProteinRequested] = useState(false);
-  const secondOpen = secondRequested || secondCarbohydrate !== null;
-  const secondProteinOpen =
-    allowsSecondProtein(meal.key) &&
-    (secondProteinRequested || secondProtein !== null);
+  const proteinCap = allowsSecondProtein(meal.key) ? 2 : 1;
+  const secondProtein =
+    proteinCap > 1 && secondProteinId && secondProteinId !== protein?.id
+      ? (proteins.find((food) => food.id === secondProteinId) ?? null)
+      : null;
+  const carbohydrateIds = [carbohydrate?.id, secondCarbohydrate?.id].filter(
+    (id): id is string => Boolean(id),
+  );
+  const proteinIds = [protein?.id, secondProtein?.id].filter(
+    (id): id is string => Boolean(id),
+  );
   const log = useOptionalLog();
   const diet = useOptionalDiet();
   const registeredSignature = useRef<string | null>(null);
@@ -283,14 +273,14 @@ export function MealBuilderScreen({
     carbohydrate && protein ? "current" : "pending",
   ];
 
-  function closeSecond() {
-    setSecondRequested(false);
-    onSecondCarbohydrateChange(null);
+  function toggleCarbohydrate(id: string) {
+    const next = toggleSlot(carbohydrate?.id ?? null, secondCarbohydrate?.id ?? null, id, 2);
+    onCarbohydrateSelectionChange(next.primary, next.second);
   }
 
-  function closeSecondProtein() {
-    setSecondProteinRequested(false);
-    onSecondProteinChange?.(null);
+  function toggleProtein(id: string) {
+    const next = toggleSlot(protein?.id ?? null, secondProtein?.id ?? null, id, proteinCap);
+    onProteinSelectionChange(next.primary, next.second);
   }
 
   const displayed: PortionCalculationResult | null =
@@ -350,82 +340,18 @@ export function MealBuilderScreen({
         legend="Carboidrato"
         name="carbohydrate"
         foods={carbohydrates}
-        selectedId={carbohydrate?.id ?? null}
-        onChange={(id) => id && onCarbohydrateChange(id)}
+        selectedIds={carbohydrateIds}
+        max={2}
+        onToggle={toggleCarbohydrate}
       />
-      {secondOptions.length > 0 ? (
-        secondOpen ? (
-          <FoodSelector
-            legend="Segundo carboidrato (opcional)"
-            name="second-carbohydrate"
-            foods={secondOptions}
-            selectedId={secondCarbohydrate?.id ?? null}
-            onChange={onSecondCarbohydrateChange}
-            noneLabel={NO_SECOND_CARBOHYDRATE_LABEL}
-            action={
-              <button
-                type="button"
-                onClick={closeSecond}
-                className="min-h-8 cursor-pointer rounded-card border-0 bg-transparent px-2 text-sm font-medium text-guide-accent-ink hover:underline"
-              >
-                Remover
-              </button>
-            }
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setSecondRequested(true)}
-            aria-expanded="false"
-            className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-card border-2 border-dashed border-guide-accent/40 bg-transparent px-4 font-medium text-guide-accent-ink transition-[border-color,background-color] duration-150 hover:border-guide-accent hover:bg-guide-card"
-          >
-            <span aria-hidden="true" className="font-display text-xl leading-none">
-              +
-            </span>
-            {ADD_SECOND_CARBOHYDRATE_LABEL}
-          </button>
-        )
-      ) : null}
       <FoodSelector
         legend="Proteína"
         name="protein"
         foods={proteins}
-        selectedId={protein?.id ?? null}
-        onChange={(id) => id && onProteinChange(id)}
+        selectedIds={proteinIds}
+        max={proteinCap}
+        onToggle={toggleProtein}
       />
-      {allowsSecondProtein(meal.key) && proteinOptions.length > 0 ? (
-        secondProteinOpen ? (
-          <FoodSelector
-            legend="Segunda proteína (opcional)"
-            name="second-protein"
-            foods={proteinOptions}
-            selectedId={secondProtein?.id ?? null}
-            onChange={(id) => onSecondProteinChange?.(id)}
-            noneLabel={NO_SECOND_PROTEIN_LABEL}
-            action={
-              <button
-                type="button"
-                onClick={closeSecondProtein}
-                className="min-h-8 cursor-pointer rounded-card border-0 bg-transparent px-2 text-sm font-medium text-guide-accent-ink hover:underline"
-              >
-                Remover
-              </button>
-            }
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setSecondProteinRequested(true)}
-            aria-expanded="false"
-            className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-card border-2 border-dashed border-guide-accent/40 bg-transparent px-4 font-medium text-guide-accent-ink transition-[border-color,background-color] duration-150 hover:border-guide-accent hover:bg-guide-card"
-          >
-            <span aria-hidden="true" className="font-display text-xl leading-none">
-              +
-            </span>
-            {ADD_SECOND_PROTEIN_LABEL}
-          </button>
-        )
-      ) : null}
       <div aria-live="polite">
         {outcome.kind === "blocked" && diet?.energyNotice ? (
           <div className="grid gap-2 rounded-card bg-guide-card p-4 shadow-card" role="status">

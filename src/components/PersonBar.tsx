@@ -53,6 +53,25 @@ function MenuIcon() {
   );
 }
 
+function FoodsIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="size-6"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M8 4.5h8l1 3.5H7l1-3.5Z" fill="currentColor" fillOpacity={0.15} />
+      <path d="M6.5 8h11l-.8 9.2a2 2 0 0 1-2 1.8H9.3a2 2 0 0 1-2-1.8L6.5 8Z" />
+      <path d="M9.5 12.5h5" />
+    </svg>
+  );
+}
+
 function DiaryIcon() {
   return (
     <svg
@@ -130,8 +149,20 @@ export function PersonBar({ person }: { person: Person }) {
 export function TabBar({ person }: { person: Person }) {
   const { pathname } = useLocation();
   const onDiary = pathname.endsWith("/diario");
+  const onFoods = pathname.endsWith("/alimentos");
   const tabs = [
-    { label: "Cardápio", to: `/${person.key}`, active: !onDiary, icon: <MenuIcon /> },
+    {
+      label: "Cardápio",
+      to: `/${person.key}`,
+      active: !onDiary && !onFoods,
+      icon: <MenuIcon />,
+    },
+    {
+      label: "Alimentos",
+      to: `/${person.key}/alimentos`,
+      active: onFoods,
+      icon: <FoodsIcon />,
+    },
     { label: "Diário", to: `/${person.key}/diario`, active: onDiary, icon: <DiaryIcon /> },
   ];
   return (

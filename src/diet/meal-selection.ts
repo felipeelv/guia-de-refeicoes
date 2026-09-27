@@ -9,8 +9,35 @@ import type {
   SupportedRestriction,
 } from "../domain/types.ts";
 
+const FOOD_CATEGORIES: readonly FoodCategory[] = ["carbohydrate", "protein"];
+
 export function allowsSecondProtein(mealKey: MealKey): boolean {
   return mealKey === "breakfast" || mealKey === "lunch";
+}
+
+export function selectionCap(mealKey: MealKey, category: FoodCategory): number {
+  if (category === "carbohydrate") return 2;
+  return allowsSecondProtein(mealKey) ? 2 : 1;
+}
+
+/**
+ * A ordem dos toques define o primeiro e o segundo.
+ * Toque num selecionado tira esse alimento. No limite, um toque novo não entra.
+ * O mesmo id não ocupa os dois lugares.
+ */
+export function toggleSlot(
+  primary: string | null,
+  second: string | null,
+  id: string,
+  max: number,
+): { primary: string | null; second: string | null } {
+  const currentSecond = max >= 2 ? second : null;
+  if (id === primary) return { primary: currentSecond, second: null };
+  if (id === currentSecond) return { primary, second: null };
+  const count = (primary ? 1 : 0) + (currentSecond ? 1 : 0);
+  if (count >= max) return { primary, second: currentSecond };
+  if (!primary) return { primary: id, second: null };
+  return { primary, second: id };
 }
 
 export interface ResolvedMealSelection {
@@ -100,4 +127,42 @@ export function foodsForMealSlot(input: {
     if (leftRank !== rightRank) return leftRank - rightRank;
     return left.sortOrder - right.sortOrder;
   });
+}
+
+/**
+ * Alimentos que já entram em alguma refeição desta pessoa.
+ * Exclusões do perfil e alergias do plano confirmado continuam valendo.
+ */
+export function foodsEnteringMenu(input: {
+  person: Person;
+  foods: readonly Food[];
+  personalized: boolean;
+  assessment: DietAssessment | null;
+}): Food[] {
+  const seen = new Set<string>();
+  const result: Food[] = [];
+  for (const meal of input.person.meals) {
+    for (const category of FOOD_CATEGORIES) {
+      const list = input.personalized
+        ? foodsForMealSlot({
+            category,
+            mealKey: meal.key,
+            person: input.person,
+            foods: input.foods,
+            assessment: input.assessment,
+          })
+        : foodsByCategory(
+            category,
+            meal.key,
+            input.person.excludedTags,
+            input.foods,
+          );
+      for (const food of list) {
+        if (seen.has(food.id)) continue;
+        seen.add(food.id);
+        result.push(food);
+      }
+    }
+  }
+  return result.sort((left, right) => left.sortOrder - right.sortOrder);
 }

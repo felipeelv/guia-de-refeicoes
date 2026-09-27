@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "tsx --tsconfig tsconfig.app.json --test tests/catalog.test.ts tests/calculate-portions.test.ts tests/meal-builder.test.tsx tests/day-log.test.ts tests/diet-policy.test.ts tests/estimate-energy.test.ts tests/diet-plan.test.ts tests/macro-portions.test.ts tests/profile-migration.test.ts tests/nutrition-summary.test.ts tests/diet-ui.test.ts tests/adjust-meal-shares.test.ts",
+    "test": "tsx --tsconfig tsconfig.app.json --test tests/catalog.test.ts tests/calculate-portions.test.ts tests/meal-builder.test.tsx tests/day-log.test.ts tests/diet-policy.test.ts tests/estimate-energy.test.ts tests/diet-plan.test.ts tests/macro-portions.test.ts tests/profile-migration.test.ts tests/nutrition-summary.test.ts tests/diet-ui.test.ts tests/adjust-meal-shares.test.ts tests/library.test.tsx",
     "catalog:push": "tsx scripts/push-catalog.ts",
     "e2e": "playwright test"
   },

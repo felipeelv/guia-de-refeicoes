@@ -2,10 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter } from "react-router-dom";
-import {
-  ADD_SECOND_CARBOHYDRATE_LABEL,
-  MealBuilderScreen,
-} from "../src/components/MealBuilder.tsx";
+import { MealBuilderScreen } from "../src/components/MealBuilder.tsx";
+import { calculatePortions } from "../src/domain/calculate-portions.ts";
+import { formatGrams } from "../src/format.ts";
 import { HomeScreen } from "../src/pages/HomePage.tsx";
 import { PERSONS, personByKey } from "../src/catalog/persons.ts";
 import type { Food, MealConfig, Person } from "../src/domain/types.ts";
@@ -99,9 +98,8 @@ function markup(
         carbohydrateId={carbohydrateId}
         secondCarbohydrateId={secondCarbohydrateId}
         proteinId={proteinId}
-        onCarbohydrateChange={() => undefined}
-        onSecondCarbohydrateChange={() => undefined}
-        onProteinChange={() => undefined}
+        onCarbohydrateSelectionChange={() => undefined}
+        onProteinSelectionChange={() => undefined}
       />
     </MemoryRouter>,
   );
@@ -164,21 +162,21 @@ test("mostra porções em gramas, preparo, fonte e margem, mas nenhuma caloria",
   assert.match(html, /TBCA/);
   assert.match(html, /TESTE/);
   assert.doesNotMatch(html, /\d+\s*=\s*\d+/);
-  assert.doesNotMatch(html, /<input(?![^>]*type="radio")/);
+  assert.doesNotMatch(html, /<input(?![^>]*type="checkbox")/);
 });
 
-test("segundo carboidrato fica recolhido e divide a porção dos dois", () => {
+test("um e dois carboidratos recalculam sem o botão de segundo carboidrato", () => {
   const alone = markup("arroz", "frango", [rice, beans]);
-  assert.match(alone, new RegExp(ADD_SECOND_CARBOHYDRATE_LABEL));
-  assert.doesNotMatch(alone, /Segundo carboidrato \(opcional\)/);
-  assert.doesNotMatch(alone, /Sem segundo carboidrato/);
+  assert.doesNotMatch(alone, /Adicionar segundo carboidrato/);
+  assert.doesNotMatch(alone, /Adicionar outra proteína/);
+  assert.doesNotMatch(alone, /Segundo carboidrato/);
   assert.match(alone, /170 g/);
+  assert.match(alone, /180 g/);
   assert.doesNotMatch(alone, /150 g/);
 
   const both = markup("arroz", "frango", [rice, beans], "feijao");
-  assert.match(both, /Segundo carboidrato \(opcional\)/);
-  assert.match(both, /Sem segundo carboidrato/);
-  assert.doesNotMatch(both, new RegExp(ADD_SECOND_CARBOHYDRATE_LABEL));
+  assert.doesNotMatch(both, /Adicionar segundo carboidrato/);
+  assert.doesNotMatch(both, /Segundo carboidrato \(opcional\)/);
   assert.match(both, /80 g/);
   assert.match(both, /150 g/);
   assert.match(both, /180 g/);
@@ -186,13 +184,93 @@ test("segundo carboidrato fica recolhido e divide a porção dos dois", () => {
   assert.doesNotMatch(both, /kcal/);
   assert.match(both, /cozido com caldo/);
   assert.doesNotMatch(both, /170 g/);
-  assert.doesNotMatch(both, /<input(?![^>]*type="radio")/);
+  assert.equal(both.match(/value="arroz"/g)?.length, 1);
+  assert.equal(both.match(/value="feijao"/g)?.length, 1);
+  assert.equal(both.match(/checked/g)?.length, 3);
 });
 
-test("o mesmo alimento não aparece nos dois seletores de carboidrato", () => {
-  const html = markup("arroz", "frango", [rice, beans], "feijao");
-  assert.equal(html.match(/value="arroz"/g)?.length, 1);
-  assert.equal(html.match(/value="feijao"/g)?.length, 2);
+const breakfast: MealConfig = {
+  key: "breakfast",
+  label: "Café da manhã",
+  targetCalories: 400,
+  carbohydrateShare: 0.4,
+  proteinShare: 0.6,
+  order: 1,
+};
+
+const turkey = food({
+  id: "peru",
+  name: "Peito de peru",
+  category: "protein",
+  caloriesPer100g: 130,
+  meals: ["breakfast"],
+  preparation: "grelhado, sem óleo",
+});
+const yogurt = food({
+  id: "iogurte",
+  name: "Iogurte natural",
+  category: "protein",
+  caloriesPer100g: 57,
+  meals: ["breakfast"],
+  preparation: "integral, sem açúcar",
+  sortOrder: 2,
+});
+
+function breakfastMarkup(proteinId: string | null, secondProteinId: string | null) {
+  const person: Person = { ...felipe, meals: [breakfast] };
+  return renderToStaticMarkup(
+    <MemoryRouter>
+      <MealBuilderScreen
+        person={person}
+        meal={breakfast}
+        carbohydrates={[rice]}
+        proteins={[turkey, yogurt]}
+        carbohydrateId="arroz"
+        secondCarbohydrateId={null}
+        proteinId={proteinId}
+        secondProteinId={secondProteinId}
+        onCarbohydrateSelectionChange={() => undefined}
+        onProteinSelectionChange={() => undefined}
+      />
+    </MemoryRouter>,
+  );
+}
+
+test("uma e duas proteínas no café recalculam sem o botão de outra proteína", () => {
+  const person: Person = { ...felipe, meals: [breakfast] };
+  const one = calculatePortions({
+    meal: breakfast,
+    carbohydrateFood: rice,
+    proteinFood: turkey,
+    roundingIncrementGrams: person.roundingIncrementGrams,
+  });
+  const two = calculatePortions({
+    meal: breakfast,
+    carbohydrateFood: rice,
+    proteinFood: turkey,
+    secondProteinFood: yogurt,
+    roundingIncrementGrams: person.roundingIncrementGrams,
+  });
+  assert.notEqual(one.protein.grams, two.protein.grams);
+  assert.ok(two.secondProtein);
+
+  const alone = breakfastMarkup("peru", null);
+  assert.doesNotMatch(alone, /Adicionar outra proteína/);
+  assert.doesNotMatch(alone, /Segunda proteína/);
+  assert.match(alone, new RegExp(formatGrams(one.carbohydrate.grams)));
+  assert.match(alone, new RegExp(formatGrams(one.protein.grams)));
+  assert.doesNotMatch(alone, new RegExp(formatGrams(two.secondProtein.grams)));
+
+  const both = breakfastMarkup("peru", "iogurte");
+  assert.doesNotMatch(both, /Adicionar outra proteína/);
+  assert.match(both, /Peito de peru/);
+  assert.match(both, /Iogurte natural/);
+  assert.match(both, new RegExp(formatGrams(two.protein.grams)));
+  assert.match(both, new RegExp(formatGrams(two.secondProtein.grams)));
+  assert.match(both, /Porções dentro da margem/);
+  assert.doesNotMatch(both, /kcal/);
+  assert.equal(both.match(/value="peru"/g)?.length, 1);
+  assert.equal(both.match(/value="iogurte"/g)?.length, 1);
 });
 
 test("cada tile mostra nome e preparo, sem energia, com etapas visíveis", () => {

@@ -23,6 +23,7 @@ import { DietProvider, useDiet } from "./diet/DietContext.tsx";
 import { dietFlags } from "./diet/flags.ts";
 import { CalculateDietPage } from "./pages/CalculateDietPage.tsx";
 import { DiaryPage } from "./pages/DiaryPage.tsx";
+import { AlimentosPage } from "./pages/AlimentosPage.tsx";
 import { HomePage } from "./pages/HomePage.tsx";
 import { MealBuilderPage } from "./pages/MealBuilderPage.tsx";
 import { MyDietPage } from "./pages/MyDietPage.tsx";
@@ -97,6 +98,7 @@ async function bootstrap() {
             <Route path="/refeicoes/:mealKey" element={<LegacyMealRedirect />} />
             <Route path="/:personKey" element={<PersonLayout />}>
               <Route index element={<HomePage />} />
+              <Route path="alimentos" element={<AlimentosPage />} />
               <Route path="refeicoes/:mealKey" element={<MealBuilderPage />} />
               <Route path="diario" element={<DiaryPage />} />
               <Route path="calcular-dieta" element={<CalculateDietPage />} />
