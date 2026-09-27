@@ -13,11 +13,11 @@ function PortionItem({
   return (
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
-        <p className="m-0 font-bold">{item.name}</p>
+        <p className="m-0 font-medium">{item.name}</p>
         <p className="m-0 text-sm text-guide-muted">{preparation}</p>
       </div>
       <div className="shrink-0 text-right">
-        <p className="m-0 font-display text-3xl leading-none tabular-nums">
+        <p className="m-0 font-display text-[28px] leading-none tabular-nums">
           {formatPortion(item)}
         </p>
         {detail ? (
@@ -32,7 +32,7 @@ function PlusDivider() {
   return (
     <div aria-hidden="true" className="flex items-center gap-3">
       <span className="h-px flex-1 bg-guide-line" />
-      <span className="flex size-6 items-center justify-center rounded-full border border-guide-line font-display text-sm leading-none text-guide-accent">
+      <span className="flex size-6 items-center justify-center rounded-full bg-guide-line font-display text-sm leading-none text-guide-accent-ink">
         +
       </span>
       <span className="h-px flex-1 bg-guide-line" />
@@ -60,7 +60,7 @@ export function PortionResult({
       : [result.carbohydrate, result.protein];
   const within = result.toleranceStatus === "within";
   return (
-    <section className="grid gap-4 rounded-3xl border border-guide-line bg-guide-card p-4 shadow-card">
+    <section className="grid gap-4 rounded-card bg-guide-card p-5 shadow-card">
       {items.map((item, index) => (
         <div key={item.foodId} className="grid gap-4">
           {index > 0 ? <PlusDivider /> : null}
@@ -71,13 +71,13 @@ export function PortionResult({
         </div>
       ))}
       <div
-        className={`rounded-2xl p-3 text-center ${
-          within ? "bg-guide-success-bg" : "bg-guide-selected"
+        className={`rounded-card p-3 text-center ${
+          within ? "bg-guide-success-bg" : "bg-guide-danger-bg"
         }`}
       >
         <p
           className={`m-0 text-sm font-bold ${
-            within ? "text-guide-success" : "text-guide-accent"
+            within ? "text-guide-success" : "text-guide-danger"
           }`}
         >
           {formatMargin(result)}

@@ -9,7 +9,7 @@ import {
   useLocation,
   useParams,
 } from "react-router-dom";
-import { PersonBar } from "./components/PersonBar.tsx";
+import { PersonBar, TabBar } from "./components/PersonBar.tsx";
 import { LogProvider, useLog } from "./components/LogContext.tsx";
 import {
   bundledCatalog,
@@ -42,6 +42,7 @@ function PersonLayout() {
     <LogProvider person={person}>
       <PersonBar person={person} />
       <AdjustedOutlet person={person} />
+      <TabBar person={person} />
     </LogProvider>
   );
 }

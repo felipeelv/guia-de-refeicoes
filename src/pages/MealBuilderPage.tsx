@@ -13,11 +13,11 @@ export function MealBuilderPage() {
   const [params, setParams] = useSearchParams();
   if (!meal) {
     return (
-      <main className="mx-auto grid w-full max-w-md gap-5 px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
-        <p className="m-0 text-xs font-bold tracking-[0.22em] text-guide-accent uppercase">
+      <main className="mx-auto grid w-full max-w-md gap-5 px-5 pt-6 pb-[calc(7rem+env(safe-area-inset-bottom))]">
+        <p className="m-0 text-sm font-medium text-guide-accent-ink">
           Ficha de porções
         </p>
-        <h1 className="font-display m-0 text-4xl text-pretty">
+        <h1 className="font-display m-0 text-[28px] leading-[1.3] text-pretty">
           Refeição não encontrada
         </h1>
         <p className="m-0 text-guide-muted">
@@ -25,7 +25,7 @@ export function MealBuilderPage() {
         </p>
         <Link
           to={`/${person.key}`}
-          className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-guide-accent px-4 text-center font-bold text-white no-underline hover:bg-guide-focus"
+          className="inline-flex min-h-[50px] items-center justify-center rounded-card bg-guide-primary px-4 text-center font-bold text-white no-underline hover:bg-guide-primary-hover"
         >
           Escolher outra refeição
         </Link>
